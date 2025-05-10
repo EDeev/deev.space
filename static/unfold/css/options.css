@@ -1,0 +1,13 @@
+@media screen and (max-width: 991.98px) {
+    .hidemobile {
+        visibility: hidden;
+        display: none;
+    }
+}
+
+@media screen and (min-width: 991.98px) {
+    .showmobile {
+        visibility: hidden;
+        display: none;
+    }
+}
