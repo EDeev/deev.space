@@ -1,0 +1,23 @@
+{% extends "wrapper.html" %}
+
+{% block content %}
+{% load static %}
+
+<title>Ошибка</title>
+
+{% include "errors/includes/navbar.html" %}
+
+<div class="cover-v1 jarallax overlay" style="background-image: url({% static 'unfold/images/black.jpg' %})">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <div class="col-md-8 mx-auto text-center">
+        <h1 class="blog-heading" data-aos="fade-up" data-aos-delay="0">Ошибка 400!</h1>
+        <div class="post-meta" data-aos="fade-up" data-aos-delay="100">Ваш браузер отправляет некорректный запрос серверу.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

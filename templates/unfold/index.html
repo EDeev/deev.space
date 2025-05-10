@@ -1,0 +1,261 @@
+{% extends "wrapper.html" %}
+
+{% block content %}
+{% load static %}
+
+<title>Егор Деев</title>
+
+{% include "unfold/includes/main_navbar.html" %}
+
+<div class="cover-v1 jarallax" style="background-image: url({% static 'unfold/images/black.jpg' %})" id="home">
+  <div class="container">
+    <div class="row align-items-center">
+
+      <div class="col-md-7 mx-auto text-center">
+        <h1 class="heading gsap-reveal-hero">deev<a href="#" class="unslate_co--site-logo">.</a>space</h1>
+        <h2 class="subheading gsap-reveal-hero">Это пространство — коллекция моих знаний как junior-программиста на C++ и Python, занимающегося разработкой телеграм-ботов на Aiogram и вёрсткой сайтов</h2>
+      </div>
+
+    </div>
+  </div>
+
+
+  <a href="#about" class="mouse-wrap smoothscroll">
+    <span class="mouse">
+      <span class="scroll"></span>
+    </span>
+    <span class="mouse-label">Scroll</span>
+  </a>
+
+</div>
+
+<div class="unslate_co--section" id="about">
+  <div class="container">
+
+    <div class="section-heading-wrap text-center mb-5">
+      <h2 class="heading-h2 text-center divider"><span class="gsap-reveal">Обо мне</span></h2>
+      <span class="gsap-reveal">
+      <img src="{% static 'unfold/images/divider.png' %}" alt="divider" width="76">
+      </span>
+    </div>
+
+
+    <div class="row mt-5 justify-content-between">
+      <div class="col-lg-7 mb-5 mb-lg-0">
+        <figure class="dotted-bg gsap-reveal-img ">
+          <img src="{% static 'unfold/images/about_me_pic.jpg' %}" alt="Image" class="img-fluid">
+        </figure>
+      </div>
+      <div class="col-lg-4 pr-lg-5">
+        <h3 class="mb-4 heading-h3"><span class="gsap-reveal">Нет ничего не постижимого</span></h3>
+        <p class="lead gsap-reveal">Я, Егор Деев, молодой специалист по C++ и Python, интересующийся самыми разными направлениями программирования, от веб-приложений до искусственного интеллекта. Мне всегда интересно узнавать что-то новое, и я готов учиться и развиваться в своей профессии. Если у вас есть предложения для меня, буду рад их <a href="https://t.me/Egor_Deev">рассмотреть</a>. </p>
+        <p class="mb-4 gsap-reveal">И, конечно же, я с энтузиазмом разберусь с поставленной задачей, даже в той сфере, о которой вчера я ещё ничего не слышал!</p>
+        <p class="gsap-reveal"><a href="https://deev.space/media/resume(14-02-25).pdf" class="btn btn-outline-pill btn-custom-light">Резюме</a></p>
+        <p class="gsap-reveal"><a href="https://github.com/IGlek" class="btn btn-outline-pill btn-custom-light">GitHub</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="unslate_co--section" id="projects">
+  <div class="container">
+
+    <div class="relative"><div class="loader-portfolio-wrap"><div class="loader-portfolio"></div></div></div>
+    <div id="portfolio-single-holder"></div>
+
+    <div class="portfolio-wrapper">
+
+      <div class="showmobile">
+        <div class="align-items-center mb-4 gsap-reveal gsap-reveal-filter"> <!-- d-flex -->
+          <h2 class="mr-auto heading-h2"><span class="gsap-reveal">Проекты</span></h2>
+        </div>
+      </div>
+      
+      <div class="hidemobile">
+        <div class="d-flex align-items-center mb-4 gsap-reveal gsap-reveal-filter"> <!-- d-flex -->
+          <h2 class="mr-auto heading-h2"><span class="gsap-reveal">Проекты</span></h2>
+          <a href="#" class="text-white js-filter d-inline-block d-lg-none">Фильтр</a>
+
+          <div class="filter-wrap">
+            <div class="filter ml-auto" id="filters">
+              <a href="#" class="active" data-filter="*">Все</a>
+              <a href="#" data-filter=".html">HTML</a>
+              <a href="#" data-filter=".cpp">C++</a>
+              <a href="#" data-filter=".python">Python</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="posts" class="row gutter-isotope-item">
+        {% include "unfold/includes/projects.html" %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="unslate_co--section" id="socials">
+  <div class="container">
+
+    <div class="section-heading-wrap text-center mb-5">
+      <h2 class="heading-h2 text-center divider"><span class="gsap-reveal">Мои соц. сети</span></h2>
+      <span class="gsap-reveal"><img src="{% static 'unfold/images/divider.png' %}" alt="divider" width="76"></span>
+    </div>
+
+    <div class="row gutter-v3">
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="feature-v1" data-aos="fade-up" data-aos-delay="0">
+          <div class="wrap-icon mb-3">
+            <img src="{% static 'unfold/images/svg/001-tg.png' %}" alt="Image" width="45">
+          </div>
+          <a href="https://t.me/programium"><h3>Это программист</h3></a>
+          <p>Мой небольшой телеграм-канал, где я делюсь своим бытом и успехами в разработке личных проектов </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="feature-v1" data-aos="fade-up" data-aos-delay="100">
+          <div class="wrap-icon mb-3">
+            <img src="{% static 'unfold/images/svg/002-vk.png' %}" alt="Icon" width="45">
+          </div>
+          <a href="https://vk.com/this_egor"><h3>ВКонтакте</h3></a>
+          <p>Моя страница в ВК, на которой я иногда публикую свои художественные рассказы и мысли о ситуации в мире </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="feature-v1" data-aos="fade-up" data-aos-delay="200">
+          <div class="wrap-icon mb-3">
+            <img src="{% static 'unfold/images/svg/003-inst.png' %}" alt="Image" class="img-fluid" width="45">
+          </div>
+          <a href="https://www.instagram.com/egor.dev"><h3>Инстаграм</h3></a>
+          <p>Если вы хотите посмотреть фото, которые я считаю красивыми, то вам ко мне в Инстаграм. Там посты редкие, но красивые </p>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="feature-v1" data-aos="fade-up" data-aos-delay="0">
+          <div class="wrap-icon mb-3">
+            <img src="{% static 'unfold/images/svg/004-git.png' %}" alt="Image" width="45">
+          </div>
+          <a href="https://github.com/IGlek"><h3>Мои проекты</h3></a>
+          <p>Это мой GitHub с репозиториями сделанных проектов, которые содержат листинг кода с небольшим описанием его работы и ссылку на работующую программу </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="feature-v1" data-aos="fade-up" data-aos-delay="100">
+          <div class="wrap-icon mb-3">
+            <img src="{% static 'unfold/images/svg/006-dis.png' %}" alt="Image" width="45">
+          </div>
+          <a href="https://discordapp.com/users/480433544380809226/"><h3>Дискорд</h3></a>
+          <p>Для онлайн общения я использую Дискорд. Так как считаю его самой удобной программой для длительных звонков </p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="feature-v1" data-aos="fade-up" data-aos-delay="200">
+          <div class="wrap-icon mb-3">
+            <img src="{% static 'unfold/images/svg/005-twit.png' %}" alt="Image" width="45">
+          </div>
+          <a href="https://twitter.com/this_egor"><h3>Твиттер</h3></a>
+          <p>Имею страницу просто по приколу, чтобы следить за заграничным дурдомом. Постов на ней нет, но зато много разных подписок </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="unslate_co--section" id="experience">
+  <div class="container">
+    
+    
+    <div class="relative"><div class="loader-portfolio-wrap"><div class="loader-portfolio"></div></div> </div>
+    <div id="portfolio-single-holder"></div>
+
+    <div class="portfolio-wrapper">
+
+      <div class="section-heading-wrap text-center mb-5">
+        <h2 class="heading-h2 text-center divider"><span class="gsap-reveal">Опыт</span></h2>
+        <span class="gsap-reveal"><img src="{% static 'unfold/images/divider.png' %}" alt="divider" width="76"></span>
+      </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+          <a href="/static/experience/misis-lang.png" class="portfolio-item ajax-load-page isotope-item gsap-reveal-img" data-id="1">
+            <div class="overlay">
+              <div class="portfolio-item-content">
+                <h3>Кейс-чемпионат - &laquo;"Язык и коммуникации"&raquo;</h3>
+                <p>Авторы исследования &laquo;New Devs&raquo;</p>
+              </div>
+            </div>
+            <img src="{% static 'experience/misis-lang.png' %}" class="lazyload  img-fluid" alt="Images" />
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+          <a href="/static/experience/ni-work.png" class="portfolio-item ajax-load-page isotope-item gsap-reveal-img" data-id="1">
+            <div class="overlay">
+              <div class="portfolio-item-content">
+                <h3>Научно-иследовательская работа - &laquo;"Разраблотка веб-интерфейса с адаптивном дизайном для пользователей с особыми возможностями здоровья в системе 1С"&raquo;</h3>
+                <p>Авторы исследования &laquo;Деев Е.В., Трошкин Д.А.&raquo;</p>
+              </div>
+            </div>
+            <img src="{% static 'experience/ni-work.png' %}" class="lazyload  img-fluid" alt="Images" />
+          </a>
+        </div>
+
+      <div id="posts" class="row gutter-isotope-item">
+        <div class="col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+          <a href="/static/experience/yaLyceum2.png" class="portfolio-item ajax-load-page isotope-item gsap-reveal-img" data-id="4">
+            <div class="overlay">
+              <div class="portfolio-item-content">
+                <h3>Курс &laquo;Основы промышленного программирования&raquo;</h3>
+                <p>&laquo;Лицей Академии Яндекса&raquo; - 2-й год обучения</p>
+              </div>
+            </div>
+            <img src="{% static 'experience/yaLyceum2.png' %}" class="lazyload  img-fluid" alt="Images" />
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+          <a href="/static/experience/yaLyceum1.png" class="portfolio-item ajax-load-page isotope-item gsap-reveal-img" data-id="3">
+            <div class="overlay">
+              <div class="portfolio-item-content">
+                <h3>Курс &laquo;Основы программирования на Python&raquo;</h3>
+                <p>&laquo;Лицей Академии Яндекса&raquo; - 1-й год обучения</p>
+              </div>
+            </div>
+            <img src="{% static 'experience/yaLyceum1.png' %}" class="lazyload  img-fluid" alt="Images" />
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+          <a href="/static/experience/MGSU.png" class="portfolio-item ajax-load-page isotope-item gsap-reveal-img" data-id="2">
+            <div class="overlay">
+              <div class="portfolio-item-content">
+                <h3>Летняя школа - &laquo;Юный архитектор&raquo;</h3>
+                <p>Довузовская подготовка МГСУ</p>
+              </div>
+            </div>
+            <img src="{% static 'experience/MGSU.png' %}" class="lazyload  img-fluid" alt="Images" />
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+          <a href="/static/experience/theater.png" class="portfolio-item ajax-load-page isotope-item gsap-reveal-img" data-id="1">
+            <div class="overlay">
+              <div class="portfolio-item-content">
+                <h3>Театральный проект - &laquo;Классная драма&raquo;</h3>
+                <p>Автор пьесы &laquo;Отражение&raquo;</p>
+              </div>
+            </div>
+            <img src="{% static 'experience/theater.png' %}" class="lazyload  img-fluid" alt="Images" />
+          </a>
+        </div>
+
+      </div>
+      
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

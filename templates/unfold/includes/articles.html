@@ -1,0 +1,18 @@
+{% block content %}
+{% load static %}
+
+  {% for post in object_list %}
+    <div class="col-sm-6 col-md-6 col-lg-4 blog-post-entry" data-aos="fade-up" data-aos-delay="0">
+      <a href="/project/{{post.id}}" class="grid-item blog-item w-100 h-100">
+        <div class="overlay">
+          <div class="portfolio-item-content">
+            <h3>{{post.title}}</h3>
+            <p class="post-meta">{{post.author}} <span class="small">&bullet;</span> {{post.date|date:"d.m.Y"}}</p>
+          </div>
+        </div>
+        <img src={{post.img}} class="lazyload" alt="Image" />
+      </a>
+    </div>
+  {% endfor %}
+
+{% endblock %}

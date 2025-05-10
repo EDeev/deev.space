@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="description" content="Я, Егор Деев, молодой специалист по C++ и Python, интересующийся самыми разными направлениями программирования, от веб-приложений до искусственного интеллекта. Мне всегда интересно узнавать что-то новое, и я готов учиться и развиваться в своей профессии. Если у вас есть предложения для меня, буду рад их рассмотреть."/>
+    <meta name="keywords" content="html, css, javascript, jquery">
+    <meta name="author" content="Егор Деев">
+
+    {% include "metrika.html" %}
+    <meta name="yandex-verification" content="71fb447ade002f78" />
+
+    {% load static %}
+    <link rel="icon" href="https://deev.space/media/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" href="{% static 'unfold/css/vendor/icomoon/style.css' %}">
+    <link rel="stylesheet" href="{% static 'unfold/css/vendor/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'unfold/css/vendor/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'unfold/css/vendor/aos.css' %}">
+    <link rel="stylesheet" href="{% static 'unfold/css/vendor/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'unfold/css/vendor/jquery.fancybox.min.css' %}">
+
+    <!-- Theme Style -->
+    <link rel="stylesheet" href="{% static 'unfold/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'unfold/css/options.css' %}">
+
+  </head>
+  <body data-spy="scroll" data-target=".site-nav-target" data-offset="200">
+
+    <nav class="unslate_co--site-mobile-menu">
+      <div class="close-wrap d-flex">
+        <a href="#" class="d-flex ml-auto js-menu-toggle">
+          <span class="close-label">Закрыть</span>
+          <div class="close-times">
+            <span class="bar1"></span>
+            <span class="bar2"></span>
+          </div>
+        </a>
+      </div>
+      <div class="site-mobile-inner"></div>
+    </nav>
+
+
+    <div class="unslate_co--site-wrap">
+
+      <div class="unslate_co--site-inner">
+
+        <div class="lines-wrap">
+          <div class="lines-inner">
+            <div class="lines"></div>
+          </div>
+        </div>
+        <!-- END lines -->
+
+        {% block content %}
+        {% endblock %}
+
+      </div>
+
+      <footer class="unslate_co--footer unslate_co--section">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-7">
+
+              <div class="footer-site-logo"><a href="#">deev<span>.</span>space</a></div>
+
+              <ul class="footer-site-social">
+                <li><a href="https://t.me/Egor_Deev">Telegram</a></li>
+                <li><a href="https://vk.com/this_egor">VKontakte</a></li>
+                <li>egor@deev.space</li>
+              </ul>
+
+              <p class="site-copyright">
+
+                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                Copyright &copy;
+                <script>
+                  document.write(new Date().getFullYear());
+                </script> All rights reserved | This template is made by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+
+              </p>
+
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+
+
+    <!-- Loader -->
+    <div id="unslate_co--overlayer"></div>
+    <div class="site-loader-wrap">
+      <div class="site-loader"></div>
+    </div>
+
+    <script src="{% static 'unfold/js/scripts-dist.js' %}"></script>
+    <script src="{% static 'unfold/js/main.js' %}"></script>
+
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{% block content %}
+{% load static %}
+
+  {% for project in object_list %}
+    <div class="item {{project.htegs}} col-sm-6 col-md-6 col-lg-4 isotope-mb-2">
+      <a href={{project.url}} class="portfolio-item blog-item ajax-load-page" data-id="{{project.id}}" data-aos="fade-up" data-aos-delay="0">
+        <div class="overlay">
+          <span class="wrap-icon"><img src={{project.img_type}} alt="Image"></span>
+          <div class="portfolio-item-content">
+            <h3>{{project.title}}</h3>
+            <p class="post-meta">{{project.date|date:"d.m.Y"}}<span class="small"> &bullet; </span>{{project.htegs_post}}</p>
+            <!-- {{project.author}}<span class="small"> &bullet; </span> -->
+          </div>
+        </div>
+        <img src={{project.img_main}} class="lazyload img-fluid" alt="Images" />
+      </a>
+    </div>
+  {% endfor %}
+
+{% endblock %}
