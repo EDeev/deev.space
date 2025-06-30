@@ -1,208 +1,230 @@
-# Личный сайт deev.space
+# deev.space
 
-## Технический стек
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python Version">
+  <img src="https://img.shields.io/badge/Django-4.2+-green.svg" alt="Django Version">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+  <img src="https://img.shields.io/badge/Status-Beta-orange.svg" alt="Status">
+</div>
 
-- **Фреймворк**: Django 4.2+
-- **Языки программирования**: Python 3.8+
-- **База данных**: SQLite
-- **Фронтенд**: HTML, CSS, JavaScript
-- **Шаблонизатор**: Django Templates
-- **Дополнительные библиотеки**: 
-  - Bootstrap для адаптивного дизайна
-  - jQuery
-  - AOS для анимаций при прокрутке
-  - Jarallax для параллакс-эффектов
+Личный веб-сайт, разработанный на Django, представляющий портфолио backend-разработчика. Сайт включает информацию о проектах, навыках, статьях и контактах с современным адаптивным дизайном.
 
-## Структура проекта
+## 🌟 Особенности
+
+- **Адаптивный дизайн** с поддержкой всех устройств
+- **Система управления контентом** через Django Admin
+- **Портфолио проектов** с фильтрацией по технологиям
+- **Блог-система** для публикации статей
+- **SEO-оптимизация** с sitemap и метатегами
+- **Интеграция с аналитикой** (Яндекс.Метрика)
+- **Параллакс-эффекты** и плавные анимации
+
+## 🛠 Технологический стек
+
+**Backend:**
+- Python 3.8+
+- Django 4.2+
+- SQLite
+
+**Frontend:**
+- HTML5, CSS3, JavaScript
+- Bootstrap 5
+- jQuery
+- AOS (Animate On Scroll)
+- Jarallax (параллакс-эффекты)
+
+**Развертывание:**
+- Nginx (веб-сервер)
+- WSGI/ASGI совместимость
+
+## 📁 Структура проекта
 
 ```
 deev.space/
-├── main_page/               # Основное приложение Django
-│   ├── migrations/          # Миграции базы данных
-│   ├── models.py            # Определения моделей данных
-│   ├── views.py             # Представления/контроллеры
-│   ├── urls.py              # URL-маршруты приложения
-│   ├── admin.py             # Конфигурация административной панели
-│   ├── apps.py              # Конфигурация приложения
-│   └── tests.py             # Тесты
-├── space/                   # Основной проект Django
-│   ├── settings.py          # Настройки проекта
-│   ├── urls.py              # Корневые URL-маршруты
-│   ├── wsgi.py              # WSGI-конфигурация
-│   └── asgi.py              # ASGI-конфигурация
-├── templates/               # HTML-шаблоны
-│   ├── wrapper.html         # Базовый шаблон сайта
-│   ├── metrika.html         # Яндекс.Метрика
-│   ├── errors/              # Шаблоны страниц ошибок
-│   └── unfold/              # Шаблоны основных страниц
-│       ├── index.html       # Главная страница
-│       ├── page_article.html # Шаблон статьи
-│       └── includes/        # Подключаемые компоненты
-├── media/                   # Медиа-файлы, загружаемые пользователями
-│   └── sitemap.xml          # Карта сайта
-├── static/                  # Статические файлы (CSS, JS, изображения)
-│   └── unfold/              # Тема оформления
-└── manage.py                # Утилита управления Django
+├── main_page/              # Django приложение
+│   ├── models.py           # Модели данных (Articles, Projects, Skills)
+│   ├── views.py            # Представления
+│   ├── admin.py            # Административная панель
+│   └── urls.py             # URL маршруты
+├── space/                  # Настройки Django проекта
+│   ├── settings.py         # Конфигурация
+│   ├── urls.py             # Корневые URL
+│   └── wsgi.py             # WSGI конфигурация
+├── templates/              # HTML шаблоны
+│   ├── wrapper.html        # Базовый шаблон
+│   ├── unfold/             # Шаблоны страниц
+│   └── errors/             # Страницы ошибок
+├── static/                 # Статические файлы
+│   └── unfold/             # CSS, JS, изображения
+├── media/                  # Загружаемые файлы
+└── requirements.txt        # Зависимости Python
 ```
 
-## Модели данных
-
-Проект использует три основные модели данных:
-
-1. **Articles** - статьи/публикации
-   - `sub_title`: подзаголовок
-   - `title`: заголовок
-   - `url`: URL-адрес
-   - `post_title`: заголовок статьи
-   - `post`: содержание статьи
-   - `img`: изображение
-   - `author`: автор
-   - `date`: дата публикации
-
-2. **Projects** - проекты
-   - `title`: название проекта
-   - `url`: URL-адрес проекта
-   - `htegs`: теги для фильтрации (html, cpp, python)
-   - `htegs_post`: отображаемые теги
-   - `img_main`: главное изображение
-   - `img_type`: изображение типа проекта
-   - `author`: автор
-   - `date`: дата создания
-
-3. **Skills** - навыки
-   - `sub_title`: подзаголовок
-   - `title`: заголовок
-   - `url`: URL-адрес
-   - `tegs`: теги
-   - `post_title`: заголовок описания
-   - `post`: содержание
-   - `img`: изображение
-   - `author`: автор
-   - `date`: дата
-
-## Установка и запуск
+## 🚀 Быстрый старт
 
 ### Предварительные требования
 
 - Python 3.8+
-- pip (менеджер пакетов Python)
+- pip
 - virtualenv (рекомендуется)
 
-### Шаги по установке
+### Установка
 
-1. Клонирование репозитория:
+1. **Клонирование репозитория**
    ```bash
-   git clone https://github.com/IGlek/deev.space.git
+   git clone https://github.com/EDeev/deev.space.git
    cd deev.space
    ```
 
-2. Создание и активация виртуального окружения:
+2. **Создание виртуального окружения**
    ```bash
    python -m venv venv
-   # Для Windows
-   venv\Scripts\activate
-   # Для Linux/Mac
-   source venv/bin/activate
+   source venv/bin/activate  # Linux/Mac
+   # или
+   venv\Scripts\activate     # Windows
    ```
 
-3. Создание структуры базы данных:
+3. **Установка зависимостей**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Применение миграций**
    ```bash
    python manage.py migrate
    ```
 
-4. Создание суперпользователя (для администрирования):
+5. **Создание суперпользователя**
    ```bash
    python manage.py createsuperuser
    ```
 
-5. Сбор статических файлов:
+6. **Сбор статических файлов**
    ```bash
    python manage.py collectstatic
    ```
-   
-   Примечание: В репозитории отсутствуют статические файлы, но они предполагаются в папке `static/`.
 
-6. Запуск сервера для разработки:
+7. **Запуск сервера разработки**
    ```bash
    python manage.py runserver
    ```
-   
-   Сайт будет доступен по адресу: http://127.0.0.1:8000/
 
-## Конфигурация
+Сайт будет доступен по адресу: `http://127.0.0.1:8000`
 
-Основные настройки находятся в файле `space/settings.py`:
+## 📊 Модели данных
 
-- `DEBUG`: для продакшн-среды следует установить `False`
-- `ALLOWED_HOSTS`: разрешенные хосты
-- `SECRET_KEY`: должен быть изменен в продакшн-среде
-- `DATABASES`: конфигурация базы данных
+### Articles (Статьи)
+- `sub_title` - подзаголовок
+- `title` - заголовок
+- `url` - URL статьи
+- `post_title` - заголовок поста
+- `post` - содержание статьи
+- `img` - изображение
+- `author` - автор
+- `date` - дата публикации
 
-## Структура URL-маршрутов
+### Projects (Проекты)
+- `title` - название проекта
+- `url` - ссылка на проект
+- `htegs` - теги для фильтрации (html, cpp, python)
+- `htegs_post` - отображаемые теги
+- `img_main` - главное изображение
+- `img_type` - иконка типа проекта
+- `author` - автор
+- `date` - дата создания
 
-### Корневые URL-маршруты (space/urls.py)
-- `/` - главная страница
-- `/admin/` - административная панель Django
+### Skills (Навыки)
+- `sub_title` - подзаголовок
+- `title` - заголовок
+- `url` - URL
+- `tegs` - теги
+- `post_title` - заголовок описания
+- `post` - описание навыка
+- `img` - изображение
+- `author` - автор
+- `date` - дата
 
-## Административная панель
+## ⚙️ Конфигурация
 
-Django-админка доступна по адресу `/admin/` и позволяет управлять:
-- Статьями (Articles)
-- Проектами (Projects)
-- Навыками (Skills)
+### Основные настройки (`space/settings.py`)
 
-## Обработка ошибок
+```python
+# Для продакшн
+DEBUG = False
+ALLOWED_HOSTS = ['deev.space', 'www.deev.space']
 
-Проект включает настраиваемые страницы ошибок:
-- 400: Некорректный запрос
-- 403: Доступ запрещен
-- 404: Страница не найдена
-- 500: Внутренняя ошибка сервера
+# Безопасность
+SECRET_KEY = 'ваш-уникальный-ключ'
 
-## Развертывание в продакшн
+# База данных
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
 
-Для развертывания на продакшн-сервере рекомендуется:
+## 🌐 Развертывание
 
-1. Настроить веб-сервер (Nginx, Apache) в качестве прокси
-2. Использовать WSGI-сервер (Gunicorn, uWSGI) для обработки Django-приложения
-3. Включить HTTPS с помощью Let's Encrypt
-4. Изменить `DEBUG = False` в settings.py
-5. Установить уникальный `SECRET_KEY`
-6. Настроить ALLOWED_HOSTS для ваших доменов
+### Nginx конфигурация
 
-Пример конфигурации Nginx:
 ```nginx
 server {
     listen 80;
     server_name deev.space www.deev.space;
     
-    location = /favicon.ico { access_log off; log_not_found off; }
-    
     location /static/ {
         root /path/to/deev.space;
+        expires 30d;
     }
     
     location /media/ {
         root /path/to/deev.space;
+        expires 30d;
     }
     
     location / {
-        include proxy_params;
-        proxy_pass http://unix:/path/to/deev.space/deev_space.sock;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 }
 ```
 
-## Интеграция с аналитикой
+### Рекомендации для продакшн
 
-Проект интегрирован с Яндекс.Метрикой для анализа посещаемости сайта. Код встроен в шаблон `templates/metrika.html`.
+- Использовать Gunicorn/uWSGI для WSGI сервера
+- Настроить HTTPS с Let's Encrypt
+- Установить `DEBUG = False`
+- Использовать PostgreSQL вместо SQLite
+- Настроить логирование
+- Включить Django security middleware
 
-## Контактная информация
+## 📈 Аналитика
 
-- Telegram: [@Egor_Deev](https://t.me/Egor_Deev)
-- GitHub: [IGlek](https://github.com/IGlek)
+Проект интегрирован с Яндекс.Метрикой для отслеживания посещаемости и поведения пользователей.
+
+## 🛡️ Безопасность
+
+- CSRF защита включена
+- XSS защита через Django
+- Настроенные заголовки безопасности
+- Валидация пользовательского ввода
+
+## 📄 Лицензия
+
+Этот проект распространяется под лицензией MIT.
+
+## 👨‍💻 Автор
+
+**Деев Егор Викторович** - Backend Developer  
+- GitHub: [@EDeev](https://github.com/EDeev)
 - Email: egor@deev.space
+- Telegram: [@Egor_Deev](https://t.me/Egor_Deev)
 
-## Лицензионная информация
+---
 
-Проект распространяется под лицензией MIT.
+<div align="center">
+  <p><sub>Создано с ❤️ от вашего дорогого - deev.space ©</sub></p>
+</div>
