@@ -1,0 +1,25 @@
+# Django Framework
+Django>=4.2.0,<5.0.0
+
+# Database
+# По умолчанию используется SQLite (встроен в Python)
+# Для PostgreSQL раскомментируйте следующую строку:
+# psycopg2-binary>=2.9.0
+
+# Web Server Support
+# Для продакшн развертывания
+gunicorn>=20.1.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Security and Utils
+python-decouple>=3.8
+whitenoise>=6.5.0
+
+# Development Dependencies (опционально)
+# django-debug-toolbar>=4.2.0
+# django-extensions>=3.2.0
+
+# Static Files Management
+# django-compressor>=4.4  # Для сжатия CSS/JS в продакшн
