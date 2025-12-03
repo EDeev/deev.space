@@ -57,7 +57,14 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/projects.css' %}">
+    <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages.css' %}">
+    <link rel="stylesheet" href="{% static 'css/media.css' %}">
     
     {% block extra_css %}{% endblock %}
     
@@ -248,6 +255,93 @@
             </div>
         </div>
     </footer>
+
+    <!-- Footer -->
+    <!-- <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="{% url 'index' %}" class="logo">
+
+                    </a>
+                    <p>{{ global_settings.site_description|default:"Персональный сайт backend-разработчика. Создаю надёжные и масштабируемые решения на Python и Django." }}</p>
+                </div>
+
+                <div class="footer-nav">
+                    <h4>Навигация</h4>
+                    <ul class="footer-links">
+                        <li><a href="{% url 'about' %}">Обо мне</a></li>
+                        <li><a href="{% url 'projects' %}">Проекты</a></li>
+                        <li><a href="{% url 'blog' %}">Блог</a></li>
+                        <li><a href="{% url 'achievements' %}">Достижения</a></li>
+                        <li><a href="{% url 'contacts' %}">Контакты</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-contact">
+                    <h4>Контакты</h4>
+                    <ul class="footer-links">
+                        <li>
+                            <a href="mailto:{{ global_settings.owner_email }}">
+                                <i class="fas fa-envelope"></i>
+                                {{ global_settings.owner_email }}
+                            </a>
+                        </li>
+                        {% if global_settings.owner_phone %}
+                        <li>
+                            <a href="tel:{{ global_settings.owner_phone|cut:' '|cut:'('|cut:')'|cut:'-' }}">
+                                <i class="fas fa-phone"></i>
+                                {{ global_settings.owner_phone }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ global_settings.owner_city }}, Россия
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="footer-social">
+                    <h4>Социальные сети</h4>
+                    <div class="footer-socials">
+                        {% if global_settings.telegram_url %}
+                        <a href="{{ global_settings.telegram_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="Telegram">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        {% endif %}
+                        {% if global_settings.github_url %}
+                        <a href="{{ global_settings.github_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        {% endif %}
+                        {% if global_settings.vk_url %}
+                        <a href="{{ global_settings.vk_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="VKontakte">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        {% endif %}
+                        {% if global_settings.linkedin_url %}
+                        <a href="{{ global_settings.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="footer-social-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        {% endif %}
+                        <a href="mailto:{{ global_settings.owner_email }}" class="footer-social-link" aria-label="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p class="footer-copyright">
+                    &copy; 2024-{% now "Y" %} {{ global_settings.owner_name }}. Все права защищены.
+                </p>
+                <p class="footer-made">
+                    Сделано с <i class="fas fa-heart" style="color: var(--primary-color);"></i> на Django
+                </p>
+            </div>
+        </div>
+    </footer> -->
     
     <!-- Back to Top -->
     <button class="back-to-top" id="backToTop" aria-label="Наверх">

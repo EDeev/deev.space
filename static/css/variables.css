@@ -1,0 +1,83 @@
+/**
+ * CSS Variables - Color Scheme & Design Tokens
+ */
+
+:root {
+    /* Primary Colors - Red Theme */
+    --primary-color: #e63946;
+    --primary-light: #ff6b6b;
+    --primary-dark: #c1121f;
+    --primary-muted: rgba(230, 57, 70, 0.15);
+    --primary-glow: rgba(230, 57, 70, 0.3);
+
+    /* Background Colors */
+    --bg-dark: #0d0d0d;
+    --bg-darker: #080808;
+    --bg-card: #141414;
+    --bg-card-hover: #1a1a1a;
+    --bg-elevated: #1e1e1e;
+    --bg-input: #1a1a1a;
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-muted: #666666;
+    --text-dark: #0d0d0d;
+
+    /* Border Colors */
+    --border-color: #2a2a2a;
+    --border-light: #3a3a3a;
+    --border-focus: var(--primary-color);
+
+    /* Status Colors */
+    --success-color: #22c55e;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    --info-color: #3b82f6;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+    --gradient-card: linear-gradient(145deg, #1a1a1a 0%, #141414 100%);
+    --gradient-glow: radial-gradient(ellipse at center, rgba(230, 57, 70, 0.15) 0%, transparent 70%);
+    --gradient-text: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 40px rgba(230, 57, 70, 0.2);
+    --shadow-glow-strong: 0 0 60px rgba(230, 57, 70, 0.3);
+
+    /* Border Radius */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --transition-fast: all 0.15s ease;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Z-Index */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal: 400;
+    --z-tooltip: 500;
+
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+
+    /* Container */
+    --container-max: 1400px;
+    --container-padding: 2rem;
+}
