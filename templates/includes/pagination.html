@@ -1,0 +1,33 @@
+<nav class="pagination" aria-label="Навигация по страницам">
+    {% if page_obj.has_previous %}
+    <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn pagination-first" title="Первая страница">
+        <i class="fas fa-angle-double-left"></i>
+    </a>
+    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn pagination-prev" title="Предыдущая">
+        <i class="fas fa-angle-left"></i>
+    </a>
+    {% endif %}
+
+    <div class="pagination-numbers">
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="pagination-num active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-num">{{ num }}</a>
+            {% elif num == 1 or num == page_obj.paginator.num_pages %}
+            <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-num">{{ num }}</a>
+            {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+            <span class="pagination-dots">...</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn pagination-next" title="Следующая">
+        <i class="fas fa-angle-right"></i>
+    </a>
+    <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn pagination-last" title="Последняя страница">
+        <i class="fas fa-angle-double-right"></i>
+    </a>
+    {% endif %}
+</nav>

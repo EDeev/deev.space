@@ -1,0 +1,286 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header" data-aos="fade-up">
+        <h1 class="page-title">
+            <span class="page-icon"><i class="fas fa-user"></i></span>
+            Обо мне
+        </h1>
+        <p class="page-subtitle">Профессиональный путь, образование и навыки</p>
+    </div>
+    
+    <!-- About Bento Grid -->
+    <div class="about-bento">
+        
+        <!-- Bio Card -->
+        <div class="bento-card about-bio" data-aos="fade-up">
+            <div class="about-bio-header">
+                <div class="about-photo">
+                    {% if site_settings.owner_photo %}
+                        <img src="{{ site_settings.owner_photo.url }}" alt="{{ site_settings.owner_name }}">
+                    {% else %}
+                        <img src="{% static 'images/hero.png' %}" alt="{{ site_settings.owner_name }}">
+                    {% endif %}
+                </div>
+                <div class="about-bio-info">
+                    <h2>{{ site_settings.owner_name }}</h2>
+                    <p class="about-title">{{ site_settings.owner_title }}</p>
+                    <div class="about-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ site_settings.owner_city }}, Россия
+                    </div>
+                </div>
+            </div>
+            <div class="about-bio-text">
+                {{ site_settings.owner_bio|linebreaks }}
+            </div>
+            <div class="about-bio-actions">
+                {% if site_settings.resume_file %}
+                <a href="{{ site_settings.resume_file.url }}" target="_blank" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                    Скачать резюме
+                </a>
+                {% endif %}
+                <a href="{% url 'contacts' %}" class="btn btn-outline">
+                    <i class="fas fa-envelope"></i>
+                    Связаться
+                </a>
+            </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="bento-card about-stats" data-aos="fade-up" data-aos-delay="100">
+            <h3 class="bento-card-title">
+                <i class="fas fa-chart-bar"></i>
+                В цифрах
+            </h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value">3+</span>
+                    <span class="stat-label">Года опыта</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">18</span>
+                    <span class="stat-label">Программных проектов</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">17k+</span>
+                    <span class="stat-label">Пользователей у программ</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">3</span>
+                    <span class="stat-label">Команды разработки</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">20+</span>
+                    <span class="stat-label">Технологический стек</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Experience Timeline -->
+        <div class="bento-card timeline-card" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="bento-card-title">
+                <i class="fas fa-briefcase"></i>
+                Опыт работы
+            </h3>
+            <div class="timeline">
+                {% for exp in experiences %}
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <span class="timeline-date">
+                                {{ exp.start_date|date:"m.Y" }} — 
+                                {% if exp.is_current %}н.в.{% else %}{{ exp.end_date|date:"m.Y" }}{% endif %}
+                            </span>
+                            <span class="timeline-duration">{{ exp.duration }}</span>
+                        </div>
+                        <h4 class="timeline-title">{{ exp.title }}</h4>
+                        <p class="timeline-subtitle">{{ exp.company }}</p>
+                        <p class="timeline-description">{{ exp.description }}</p>
+                        
+                        {% if exp.responsibilities %}
+                        <ul class="timeline-list">
+                            {% for resp in exp.get_responsibilities_list %}
+                            <li><i class="fas fa-check"></i> {{ resp }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+                        {% if exp.technologies %}
+                        <div class="timeline-tech">
+                            {% for tech in exp.get_technologies_list %}
+                            <span class="tech-badge">
+                                <i class="{{ tech|tech_icon }}"></i>
+                                {{ tech }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Education Timeline -->
+        <div class="bento-card timeline-card" data-aos="fade-up" data-aos-delay="300">
+            <h3 class="bento-card-title">
+                <i class="fas fa-graduation-cap"></i>
+                Образование
+            </h3>
+            <div class="timeline">
+                {% for edu in educations %}
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <!-- <i class="{{ edu.icon }}"></i> -->
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <span class="timeline-date">
+                                {{ edu.start_year }} — 
+                                {% if edu.is_current %}н.в.{% else %}{{ edu.end_year }}{% endif %}
+                            </span>
+                            <span class="education-type education-type-{{ edu.education_type }}">
+                                {{ edu.get_education_type_display }}
+                            </span>
+                        </div>
+                        <h4 class="timeline-title">{{ edu.degree }}</h4>
+                        <p class="timeline-subtitle">{{ edu.institution_short|default:edu.institution }}</p>
+                        
+                        {% if edu.description %}
+                        <p class="timeline-description">{{ edu.description }}</p>
+                        {% endif %}
+                        
+                        {% if edu.achievements %}
+                        <ul class="timeline-list">
+                            {% for ach in edu.get_achievements_list %}
+                            <li><i class="fas fa-check"></i> {{ ach }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        
+                        {% if edu.certificate_number %}
+                        <div class="timeline-certificate">
+                            <i class="fas fa-certificate"></i>
+                            Сертификат: {{ edu.certificate_number }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Skills Full -->
+        <div class="bento-card skills-full" data-aos="fade-up" data-aos-delay="400">
+            <h3 class="bento-card-title">
+                <i class="fas fa-laptop-code"></i>
+                Технические навыки
+            </h3>
+            <div class="skills-full-grid">
+                {% for category_name, category_skills in skills_by_category.items %}
+                <div class="skill-category-card">
+                    <h4 class="skill-category-title">{{ category_name }}</h4>
+                    <div class="skill-tags">
+                        {% for skill in category_skills %}
+                        <span class="skill-tag">
+                            <i class="{{ skill.icon|default:'fas fa-code' }}"></i>
+                            {{ skill.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Soft Skills & Interests -->
+        <div class="bento-card languages-card" data-aos="fade-up" data-aos-delay="500">
+            <h3 class="bento-card-title">
+                <i class="fas fa-brain"></i>
+                Soft Skills
+            </h3>
+            <div class="soft-skills-list">
+                <div class="soft-skill-item">
+                    <i class="fas fa-users"></i>
+                    <span>Навык налаживания контакта с коллегами</span>
+                </div>
+                <div class="soft-skill-item">
+                    <i class="fas fa-user-tie"></i>
+                    <span>Опыт управления командой разработки</span>
+                </div>
+                <div class="soft-skill-item">
+                    <i class="fas fa-book-reader"></i>
+                    <span>Лёгкость в освоении нового материала</span>
+                </div>
+                <div class="soft-skill-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Умение эффективно распределять время</span>
+                </div>
+                <div class="soft-skill-item">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Гибкость в процессе выполнения задач</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interests -->
+        <div class="bento-card languages-card" data-aos="fade-up" data-aos-delay="600">
+            <h3 class="bento-card-title">
+                <i class="fas fa-heart"></i>
+                Интересы
+            </h3>
+            <div class="interests-list">
+                <div class="interest-item">
+                    <i class="fab fa-github"></i>
+                    <span>OpenSource разработка</span>
+                </div>
+                <div class="interest-item">
+                    <i class="fas fa-server"></i>
+                    <span>Инфраструктурные задачи нагруженных систем</span>
+                </div>
+                <div class="interest-item">
+                    <i class="fas fa-network-wired"></i>
+                    <span>Отказоустойчивые распределённые системы</span>
+                </div>
+                <div class="interest-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Обучение нейросетей и ML</span>
+                </div>
+                <div class="interest-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>Автоматизация процессов</span>
+                </div>
+                <div class="interest-item">
+                    <i class="fas fa-plug"></i>
+                    <span>Создание API и микросервисов</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Languages -->
+        <div class="bento-card languages-card" data-aos="fade-up" data-aos-delay="700">
+            <h3 class="bento-card-title">
+                <i class="fas fa-language"></i>
+                Языки
+            </h3>
+            <div class="languages-list">
+                <div class="language-item">
+                    <span class="language-name">Русский</span>
+                    <span class="language-level">Родной</span>
+                </div>
+                <div class="language-item">
+                    <span class="language-name">English</span>
+                    <span class="language-level">B1 (технический)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

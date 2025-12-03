@@ -1,0 +1,302 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Bento Grid -->
+    <div class="bento-grid bento-hero">
+
+        <!-- Main Profile Card -->
+        <div class="bento-card bento-profile" data-aos="fade-up">
+            <div class="profile-photo" data-aos="zoom-in" data-aos-delay="200">
+                {% if site_settings.owner_photo %}
+                    <img src="{{ site_settings.owner_photo.url }}" alt="{{ site_settings.owner_name }}">
+                {% else %}
+                    <img src="{% static 'img/hero.jpg' %}" alt="{{ site_settings.owner_name }}">
+                {% endif %}
+            </div>
+            <div class="profile-info">
+                <h1>{{ site_settings.owner_name }}</h1>
+                <p class="profile-title">
+                    <i class="fas fa-code"></i>
+                    {{ site_settings.owner_title }}
+                </p>
+                <p class="profile-description">
+                    {{ site_settings.owner_bio|truncatewords:50|default:"Опытный разработчик с более чем 3-летним стажем программирования. Специализируюсь на создании backend-решений, парсинге данных, автоматизации процессов и интеграции AI-компонентов." }}
+                </p>
+                <div class="profile-buttons">
+                    <a href="{% url 'projects' %}" class="btn btn-primary">
+                        <i class="fas fa-folder-open"></i>
+                        Мои проекты
+                    </a>
+                    <a href="{% url 'contacts' %}" class="btn btn-outline">
+                        <i class="fas fa-envelope"></i>
+                        Связаться
+                    </a>
+                    {% if site_settings.resume_file %}
+                    <a href="{{ site_settings.resume_file.url }}" class="btn btn-ghost" target="_blank">
+                        <i class="fas fa-file-alt"></i>
+                        Резюме
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Info Cards -->
+        <div class="bento-quick" data-aos="fade-up" data-aos-delay="100">
+            <div class="quick-card">
+                <div class="quick-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="quick-content">
+                    <h4>Локация</h4>
+                    <p>{{ site_settings.owner_city|default:"Москва" }}, Россия</p>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div class="quick-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="quick-content">
+                    <h4>Опыт</h4>
+                    <p>3+ года</p>
+                </div>
+            </div>
+
+            <div class="quick-card">
+                <div class="quick-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="quick-content">
+                    <h4>Образование</h4>
+                    <p>МосПолитех</p>
+                </div>
+            </div>
+
+            <div class="quick-card social-quick-card">
+                <div class="quick-icon">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div class="quick-content">
+                    <h4>Социальные сети</h4>
+                    <div class="social-icons-inline">
+                        {% if site_settings.telegram_url %}
+                        <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer"
+                           class="social-icon-link" aria-label="Telegram">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.github_url %}
+                        <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener noreferrer"
+                           class="social-icon-link" aria-label="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.vk_url %}
+                        <a href="{{ site_settings.vk_url }}" target="_blank" rel="noopener noreferrer"
+                           class="social-icon-link" aria-label="VKontakte">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        {% endif %}
+                        {% if site_settings.linkedin_url %}
+                        <a href="{{ site_settings.linkedin_url }}" target="_blank" rel="noopener noreferrer"
+                           class="social-icon-link" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Links Card -->
+        <!-- <div class="bento-card bento-socials" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="bento-card-title">
+                <i class="fas fa-share-alt"></i>
+                Социальные сети
+            </h3>
+            <div class="socials-grid">
+                {% if site_settings.telegram_url %}
+                <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener" class="social-link">
+                    <i class="fab fa-telegram"></i>
+                    <span>Telegram</span>
+                </a>
+                {% endif %}
+                {% if site_settings.github_url %}
+                <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener" class="social-link">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                {% endif %}
+                <a href="mailto:{{ site_settings.owner_email }}" class="social-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+                {% if site_settings.owner_phone %}
+                <a href="tel:{{ site_settings.owner_phone|cut:' '|cut:'('|cut:')'|cut:'-' }}" class="social-link">
+                    <i class="fas fa-phone"></i>
+                    <span>Телефон</span>
+                </a>
+                {% endif %}
+            </div>
+        </div> -->
+
+        <!-- Skills Card -->
+        <div class="bento-card skills-full" data-aos="fade-up" data-aos-delay="200"> <!-- skills-full in class -->
+            <div class="skills-header">
+                <div class="icon-box">
+                    <i class="fas fa-laptop-code"></i>
+                </div>
+                <h3>Технологический стек</h3>
+            </div>
+
+            <div class="skills-categories">
+                {% for category_name, category_skills in skills_by_category.items %}
+                <div class="skill-category">
+                    <div class="skill-category-title">{{ category_name }}</div>
+                    <div class="skill-tags">
+                        {% for skill in category_skills %}
+                        <span class="skill-tag">
+                            <i class="{{ skill.icon|default:'fas fa-code' }}"></i>
+                            {{ skill.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Projects Section -->
+    <section class="section" id="projects-section">
+        <div class="section-header">
+            <h2 class="section-title" data-aos="fade-right">
+                <div class="section-icon">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                Избранные проекты
+            </h2>
+            <a href="{% url 'projects' %}" class="btn btn-outline btn-sm" data-aos="fade-left">
+                Все проекты
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="projects-bento">
+            {% for project in featured_projects %}
+                {% include 'includes/project_card.html' with project=project delay=forloop.counter0 %}
+            {% empty %}
+            <div class="bento-card empty-state" style="grid-column: span 12;">
+                <i class="fas fa-folder-open"></i>
+                <p>Проекты скоро появятся...</p>
+            </div>
+            {% endfor %}
+            
+            <!-- GitHub CTA Card -->
+            {% if site_settings.github_url %}
+            <div class="project-card github-cta" data-aos="fade-up" data-aos-delay="500">
+                <div class="github-cta-content">
+                    <i class="fab fa-github"></i>
+                    <p>Ещё 12 проектов на GitHub</p>
+                    <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
+                        Перейти
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    
+    <div class="section-divider"></div>
+    
+    <!-- Blog Section -->
+    <section class="section" id="blog-section">
+        <div class="section-header">
+            <h2 class="section-title" data-aos="fade-right">
+                <div class="section-icon">
+                    <i class="fas fa-pen-fancy"></i>
+                </div>
+                Последние публикации
+            </h2>
+            <a href="{% url 'blog' %}" class="btn btn-outline btn-sm" data-aos="fade-left">
+                Все статьи
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+        
+        <div class="blog-grid">
+            {% for article in recent_articles %}
+            <article class="article-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+                {% if article.img %}
+                <div class="article-image">
+                    <a href="{{ article.get_absolute_url }}">
+                        <img src="{{ article.img.url }}" alt="{{ article.title }}" loading="lazy">
+                    </a>
+                </div>
+                {% endif %}
+                <div class="article-content">
+                    <div class="article-meta">
+                        {% if article.category %}
+                        <a href="{{ article.category.get_absolute_url }}" class="article-category">
+                            {{ article.category.name }}
+                        </a>
+                        {% endif %}
+                        <span class="article-date">
+                            <i class="far fa-calendar-alt"></i>
+                            {{ article.date|date:"d.m.Y" }}
+                        </span>
+                    </div>
+                    <h3 class="article-title">
+                        <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                    </h3>
+                    <p class="article-excerpt">{{ article.excerpt|truncatewords:20 }}</p>
+                    <div class="article-footer">
+                        <div class="article-stats">
+                            <span><i class="far fa-eye"></i> {{ article.views }}</span>
+                            <span><i class="far fa-comment"></i> {{ article.comments_count }}</span>
+                        </div>
+                        <a href="{{ article.get_absolute_url }}" class="article-read-more">
+                            Читать <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="bento-card empty-state" style="grid-column: 1 / -1;">
+                <i class="fas fa-pen"></i>
+                <p>Статьи скоро появятся...</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta-section" data-aos="fade-up">
+        <div class="cta-content">
+            <div class="cta-icon">
+                <i class="fas fa-handshake"></i>
+            </div>
+            <h2>Есть проект или идея?</h2>
+            <p>Свяжитесь со мной для обсуждения сотрудничества или если у вас есть интересная задача</p>
+            <div class="cta-buttons">
+                <a href="{% url 'contacts' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-envelope"></i>
+                    Написать мне
+                </a>
+                {% if site_settings.telegram_url %}
+                <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-lg">
+                    <i class="fab fa-telegram"></i>
+                    Telegram
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

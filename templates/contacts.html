@@ -1,0 +1,208 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header" data-aos="fade-up">
+        <h1 class="page-title">
+            <span class="page-icon"><i class="fas fa-envelope"></i></span>
+            Контакты
+        </h1>
+        <p class="page-subtitle">Свяжитесь со мной любым удобным способом</p>
+    </div>
+    
+    <!-- Contact Bento Grid -->
+    <div class="contact-bento">
+        <!-- Contact Form -->
+        <div class="bento-card contact-form-card" data-aos="fade-up" data-aos-delay="100">
+            <h3 class="bento-card-title">
+                <i class="fas fa-envelope"></i>
+                Написать сообщение
+            </h3>
+            
+            <form id="contact-form" class="contact-form" method="post" action="{% url 'contacts' %}">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_name" class="form-label">Имя *</label>
+                        {{ contact_form.name }}
+                        {% if contact_form.name.errors %}
+                        <span class="form-error">{{ contact_form.name.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_email" class="form-label">Email *</label>
+                        {{ contact_form.email }}
+                        {% if contact_form.email.errors %}
+                        <span class="form-error">{{ contact_form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_subject" class="form-label">Тема *</label>
+                    {{ contact_form.subject }}
+                    {% if contact_form.subject.errors %}
+                    <span class="form-error">{{ contact_form.subject.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_message" class="form-label">Сообщение *</label>
+                    {{ contact_form.message }}
+                    {% if contact_form.message.errors %}
+                    <span class="form-error">{{ contact_form.message.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group captcha-group">
+                    <div class="smart-captcha-wrapper" style="height: 100px;">
+                        <div id="contact-captcha-container"
+                             class="smart-captcha"
+                             data-sitekey="{{ smartcaptcha_client_key }}"
+                             data-hl="ru"></div>
+                        {{ contact_form.captcha }}
+                    </div>
+                    {% if contact_form.captcha.errors %}
+                    <span class="form-error">{{ contact_form.captcha.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    function initContactCaptcha() {
+                        if (window.smartCaptcha) {
+                            window.smartCaptcha.render('contact-captcha-container', {
+                                sitekey: '{{ smartcaptcha_client_key }}',
+                                hl: 'ru',
+                                callback: function(token) {
+                                    document.getElementById('smart-captcha-token').value = token;
+                                }
+                            });
+                        } else {
+                            setTimeout(initContactCaptcha, 100);
+                        }
+                    }
+                    initContactCaptcha();
+                });
+                </script>
+                
+                <button type="submit" class="btn btn-primary btn-lg btn-full">
+                    <i class="fas fa-envelope"></i>
+                    Отправить сообщение
+                </button>
+            </form>
+        </div>
+        
+        <!-- Contact Info -->
+        <div class="bento-card contact-info-card" data-aos="fade-up" data-aos-delay="200">
+            <h3 class="bento-card-title">
+                <i class="fas fa-address-card"></i>
+                Контактная информация
+            </h3>
+            
+            <div class="contact-methods">
+                <!-- Email -->
+                <div class="contact-method">
+                    <div class="contact-method-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h4>Email</h4>
+                        <a href="mailto:{{ site_settings.owner_email }}">{{ site_settings.owner_email }}</a>
+                    </div>
+                    <button type="button" class="contact-copy-btn" onclick="copyToClipboard('{{ site_settings.owner_email }}', this)" title="Копировать">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                
+                <!-- Phone -->
+                {% if site_settings.owner_phone %}
+                <div class="contact-method">
+                    <div class="contact-method-icon" style="background-color: #33311A">
+                        <i class="fas fa-phone" style="color: #EAB308"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h4>Телефон</h4>
+                        <a href="tel:{{ site_settings.owner_phone|cut:' '|cut:'('|cut:')'|cut:'-' }}">{{ site_settings.owner_phone }}</a>
+                    </div>
+                    <button type="button" class="contact-copy-btn" onclick="copyToClipboard('{{ site_settings.owner_phone|cut:' '|cut:'('|cut:')'|cut:'-' }}', this)" title="Копировать">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                {% endif %}
+                
+                <!-- Telegram -->
+                {% if site_settings.telegram_url %}
+                <div class="contact-method">
+                    <div class="contact-method-icon telegram">
+                        <i class="fab fa-telegram"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h4>Telegram</h4>
+                        <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener">@Egor_Deev</a>
+                    </div>
+                    <button type="button" class="contact-copy-btn" onclick="copyToClipboard('@Egor_Deev', this)" title="Копировать">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                {% endif %}
+                
+                <!-- Location -->
+                <div class="contact-method">
+                    <div class="contact-method-icon" style="background-color: #1B3B27">
+                        <i class="fas fa-map-marker-alt" style="color: #22C55E"></i>
+                    </div>
+                    <div class="contact-method-info">
+                        <h4>Город</h4>
+                        <p>{{ site_settings.owner_city }}, Россия</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="contact-social">
+                <h4>Социальные сети</h4>
+                <div class="contact-social-links">
+                    {% if site_settings.telegram_url %}
+                    <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener" class="contact-social-link telegram" title="Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    {% endif %}
+                    {% if site_settings.github_url %}
+                    <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener" class="contact-social-link github" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    {% endif %}
+                    {% if site_settings.vk_url %}
+                    <a href="{{ site_settings.vk_url }}" target="_blank" rel="noopener" class="contact-social-link vk" title="VKontakte">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    {% endif %}
+                    {% if site_settings.linkedin_url %}
+                    <a href="{{ site_settings.linkedin_url }}" target="_blank" rel="noopener" class="contact-social-link linkedin" title="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Resume Download -->
+            {% if site_settings.resume_file %}
+            <div class="contact-resume">
+                <h4>Резюме</h4>
+                <p>Скачайте моё резюме в формате PDF</p>
+                <a href="{{ site_settings.resume_file.url }}" target="_blank" class="btn btn-outline">
+                    <i class="fas fa-download"></i>
+                    Скачать резюме
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

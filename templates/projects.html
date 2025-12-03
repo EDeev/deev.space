@@ -1,0 +1,123 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header" data-aos="fade-up">
+        <h1 class="page-title">
+            <span class="page-icon"><i class="fas fa-rocket"></i></span>
+            Проекты
+        </h1>
+        <p class="page-subtitle">Портфолио выполненных работ и проектов в разработке</p>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters-section" data-aos="fade-up" data-aos-delay="100">
+        <div class="filters-wrapper">
+            <div class="filter-group">
+                <span class="filter-label">Статус:</span>
+                <div class="filter-buttons">
+                    <a href="{% url 'projects' %}" class="filter-btn {% if not current_status %}active{% endif %}">
+                        Все
+                    </a>
+                    <a href="{% url 'projects' %}?status=completed" class="filter-btn {% if current_status == 'completed' %}active{% endif %}">
+                        <i class="fas fa-check-circle"></i>
+                        Завершённые
+                    </a>
+                    <a href="{% url 'projects' %}?status=in_development" class="filter-btn {% if current_status == 'in_development' %}active{% endif %}">
+                        <i class="fas fa-code"></i>
+                        В разработке
+                    </a>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">Технология:</span>
+                <select class="filter-select" id="techFilter" onchange="filterByTech(this.value)">
+                    <option value="">Все технологии</option>
+                    {% for tech in all_technologies %}
+                    <option value="{{ tech }}" {% if current_tech == tech %}selected{% endif %}>{{ tech }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Completed Projects -->
+    {% if completed_projects %}
+    <section class="projects-section" data-aos="fade-up" data-aos-delay="200">
+        <h2 class="section-subtitle">
+            <i class="fas fa-check-circle"></i>
+            Завершённые проекты
+            <span class="count-badge">{{ completed_projects.count }}</span>
+        </h2>
+        
+        <div class="projects-bento">
+            {% for project in completed_projects %}
+                {% include 'includes/project_card.html' with project=project delay=forloop.counter0 %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- In Development Projects -->
+    {% if dev_projects %}
+    <section class="projects-section" data-aos="fade-up">
+        <h2 class="section-subtitle">
+            <i class="fas fa-code"></i>
+            В разработке
+            <span class="count-badge">{{ dev_projects.count }}</span>
+        </h2>
+        
+        <div class="projects-bento">
+            {% for project in dev_projects %}
+                {% include 'includes/project_card.html' with project=project delay=forloop.counter0 %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+    
+    <!-- Empty State -->
+    {% if not completed_projects and not dev_projects %}
+    <div class="empty-state" data-aos="fade-up">
+        <i class="fas fa-folder-open"></i>
+        <h3>Проекты не найдены</h3>
+        <p>Попробуйте изменить параметры фильтрации</p>
+        <a href="{% url 'projects' %}" class="btn btn-primary">
+            Сбросить фильтры
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- GitHub CTA -->
+    {% if global_settings.github_url %}
+    <div class="github-cta-section" data-aos="fade-up">
+        <div class="github-cta-card">
+            <i class="fab fa-github"></i>
+            <div class="github-cta-text">
+                <h3>Больше проектов на GitHub</h3>
+                <p>Ознакомьтесь с полным списком моих проектов и исходным кодом</p>
+            </div>
+            <a href="{{ global_settings.github_url }}" target="_blank" rel="noopener" class="btn btn-primary">
+                Перейти на GitHub
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function filterByTech(tech) {
+    const url = new URL(window.location.href);
+    if (tech) {
+        url.searchParams.set('tech', tech);
+    } else {
+        url.searchParams.delete('tech');
+    }
+    window.location.href = url.toString();
+}
+</script>
+{% endblock %}

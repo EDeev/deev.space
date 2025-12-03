@@ -1,0 +1,92 @@
+{% load custom_filters %}
+
+{% for comment in comments %}
+<div class="comment {% if comment.parent %}comment-reply{% endif %}" 
+     id="comment-{{ comment.id }}"
+     style="{% if comment.nesting_level > 0 %}margin-left: {{ comment.nesting_level|add:0 }}rem;{% endif %}">
+    
+    <div class="comment-header">
+        <div class="comment-author">
+            <span class="comment-avatar">{{ comment.user.get_avatar_letter }}</span>
+            <div class="comment-author-info">
+                <span class="comment-name">{{ comment.user.username }}</span>
+                <span class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="comment-content">
+        {{ comment.content|safe|linebreaks }}
+    </div>
+    
+    <div class="comment-actions">
+        <!-- Likes -->
+        <button type="button" 
+                class="vote-btn like"
+                id="comment-{{ comment.id }}-like-btn"
+                onclick="toggleCommentLike({{ comment.id }}, true)"
+                {% if not user.is_authenticated %}disabled{% endif %}>
+            <i class="far fa-thumbs-up"></i>
+            <span id="comment-{{ comment.id }}-likes">{{ comment.likes_count }}</span>
+        </button>
+        
+        <button type="button"
+                class="vote-btn dislike"
+                id="comment-{{ comment.id }}-dislike-btn"
+                onclick="toggleCommentLike({{ comment.id }}, false)"
+                {% if not user.is_authenticated %}disabled{% endif %}>
+            <i class="far fa-thumbs-down"></i>
+            <span id="comment-{{ comment.id }}-dislikes">{{ comment.dislikes_count }}</span>
+        </button>
+        
+        <!-- Reply Button -->
+        {% if user.is_authenticated and comment.nesting_level < 3 %}
+        <button type="button" class="reply-btn" onclick="showReplyForm({{ comment.id }})">
+            <i class="fas fa-reply"></i>
+            Ответить
+        </button>
+        {% endif %}
+    </div>
+    
+    <!-- Reply Form (Hidden by default) -->
+    {% if user.is_authenticated and comment.nesting_level < 3 %}
+    <div class="reply-form-container" id="reply-form-container-{{ comment.id }}" style="display: none;">
+        <form class="comment-form reply-form" id="reply-form-{{ comment.id }}" 
+              onsubmit="event.preventDefault(); submitComment({{ comment.article.id }}, {{ comment.id }});">
+            {% csrf_token %}
+            <div class="comment-form-header">
+                <span class="comment-avatar">{{ user.get_avatar_letter }}</span>
+                <span>Ответ на комментарий {{ comment.user.username }}</span>
+            </div>
+            <textarea name="content" 
+                      class="form-control" 
+                      placeholder="Напишите ответ..." 
+                      rows="2" 
+                      required 
+                      maxlength="2000"></textarea>
+            <div class="comment-form-footer">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="hideReplyForm({{ comment.id }})">
+                    Отмена
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="fas fa-paper-plane"></i>
+                    Ответить
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+    
+    <!-- Nested Replies -->
+    {% if comment.replies.all %}
+    <div class="comment-replies">
+        {% include 'includes/comments.html' with comments=comment.replies.all %}
+    </div>
+    {% endif %}
+</div>
+{% empty %}
+<div class="comments-empty">
+    <i class="far fa-comment"></i>
+    <p>Комментариев пока нет. Будьте первым!</p>
+</div>
+{% endfor %}

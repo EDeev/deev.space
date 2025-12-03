@@ -1,0 +1,27 @@
+<div class="smart-captcha-wrapper" style="height: 100px;">
+    <div id="captcha-container"
+         class="smart-captcha"
+         data-sitekey="{{ client_key }}"
+         data-hl="ru"></div>
+    <input type="hidden" name="{{ widget.name }}" id="smart-captcha-token" value="">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ожидаем загрузки SmartCaptcha
+    function initSmartCaptcha() {
+        if (window.smartCaptcha) {
+            window.smartCaptcha.render('captcha-container', {
+                sitekey: '{{ client_key }}',
+                hl: 'ru',
+                callback: function(token) {
+                    document.getElementById('smart-captcha-token').value = token;
+                }
+            });
+        } else {
+            setTimeout(initSmartCaptcha, 100);
+        }
+    }
+    initSmartCaptcha();
+});
+</script>

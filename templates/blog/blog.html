@@ -1,0 +1,159 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header" data-aos="fade-up">
+        <h1 class="page-title">
+            <span class="page-icon"><i class="fas fa-pen-fancy"></i></span>
+            {% if current_category %}
+                {{ current_category.name }}
+            {% else %}
+                Блог
+            {% endif %}
+        </h1>
+        <p class="page-subtitle">
+            {% if current_category %}
+                {{ current_category.description|default:"Статьи в категории"|truncatewords:15 }}
+            {% else %}
+                Технические статьи, гайды и размышления о разработке
+            {% endif %}
+        </p>
+    </div>
+    
+    <!-- Search & Filters -->
+    <div class="blog-filters" data-aos="fade-up" data-aos-delay="100">
+        <!-- Search -->
+        <form class="search-form" method="get" action="{% url 'blog' %}">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск статей..." class="search-input">
+                {% if search_query %}
+                <a href="{% url 'blog' %}" class="search-clear">
+                    <i class="fas fa-times"></i>
+                </a>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+        
+        <!-- Categories -->
+        <div class="categories-list">
+            <a href="{% url 'blog' %}" class="category-chip {% if not current_category %}active{% endif %}">
+                <i class="fas fa-list"></i>
+                Все
+                <span class="category-count">{{ total_articles }}</span>
+            </a>
+            {% for category in categories %}
+            <a href="{{ category.get_absolute_url }}" class="category-chip {% if current_category.slug == category.slug %}active{% endif %}">
+                <i class="{{ category.icon }}"></i>
+                {{ category.name }}
+                <span class="category-count">{{ category.count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Search Results Info -->
+    {% if search_query %}
+    <div class="search-results-info" data-aos="fade-up">
+        <p>
+            Результаты поиска по запросу: <strong>"{{ search_query }}"</strong>
+            <span class="results-count">(найдено: {{ articles|length }})</span>
+        </p>
+    </div>
+    {% endif %}
+    
+    <!-- Articles Grid -->
+    {% if articles %}
+    <div class="blog-grid" data-aos="fade-up" data-aos-delay="200">
+        {% for article in articles %}
+        <article class="article-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|add:1 }}0">
+            {% if article.img %}
+            <div class="article-image">
+                <a href="{{ article.get_absolute_url }}">
+                    <img src="{{ article.img.url }}" alt="{{ article.title }}" loading="lazy">
+                </a>
+            </div>
+            {% endif %}
+            
+            <div class="article-content">
+                <div class="article-meta">
+                    {% if article.category %}
+                    <a href="{{ article.category.get_absolute_url }}" class="article-category">
+                        <i class="{{ article.category.icon }}"></i>
+                        {{ article.category.name }}
+                    </a>
+                    {% endif %}
+                    <span class="article-date">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ article.date|date:"d.m.Y" }}
+                    </span>
+                </div>
+                
+                <h2 class="article-title">
+                    <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                </h2>
+                
+                {% if article.sub_title %}
+                <p class="article-subtitle">{{ article.sub_title }}</p>
+                {% endif %}
+                
+                <p class="article-excerpt">{{ article.excerpt|truncatewords:25 }}</p>
+                
+                <div class="article-footer">
+                    <div class="article-stats">
+                        <span title="Просмотры">
+                            <i class="far fa-eye"></i>
+                            {{ article.views }}
+                        </span>
+                        <span title="Комментарии">
+                            <i class="far fa-comment"></i>
+                            {{ article.comments_count }}
+                        </span>
+                        <span title="Лайки">
+                            <i class="far fa-heart"></i>
+                            {{ article.likes_count }}
+                        </span>
+                    </div>
+                    <a href="{{ article.get_absolute_url }}" class="article-read-more">
+                        Читать далее
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="pagination-wrapper" data-aos="fade-up">
+        {% include 'includes/pagination.html' %}
+    </div>
+    {% endif %}
+    
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state" data-aos="fade-up">
+        <i class="fas fa-pen"></i>
+        <h3>Статьи не найдены</h3>
+        {% if search_query %}
+        <p>По вашему запросу ничего не найдено. Попробуйте изменить поисковый запрос.</p>
+        <a href="{% url 'blog' %}" class="btn btn-primary">
+            Сбросить поиск
+        </a>
+        {% elif current_category %}
+        <p>В этой категории пока нет статей.</p>
+        <a href="{% url 'blog' %}" class="btn btn-primary">
+            Все статьи
+        </a>
+        {% else %}
+        <p>Статьи скоро появятся, следите за обновлениями!</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

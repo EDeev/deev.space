@@ -1,0 +1,152 @@
+{% load custom_filters %}
+
+<div class="project-card {{ project.card_size }}"
+     data-aos="fade-up"
+     data-aos-delay="{{ delay|default:0 }}00"
+     data-technologies="{{ project.technologies|lower }}">
+
+    {% if project.card_size == 'featured' %}
+        <!-- Featured Layout (Large) -->
+        <div class="project-image">
+            {% if project.img_main %}
+            <img src="{{ project.img_main.url }}" alt="{{ project.title }}" loading="lazy">
+            {% else %}
+            <div class="project-image-placeholder">
+                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
+            </div>
+            {% endif %}
+
+            <div class="project-logo">
+                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
+            </div>
+
+            <span class="project-status {{ project.status|status_class }}">
+                {{ project.status|status_label }}
+            </span>
+        </div>
+
+        <div class="project-content">
+            <h3 class="project-title">
+                {{ project.title }}
+                {% if project.users_count %}
+                <span class="project-users">
+                    <i class="fas fa-users"></i>
+                    {{ project.users_count }}
+                </span>
+                {% endif %}
+            </h3>
+
+            <p class="project-description">{{ project.short_description }}</p>
+
+            {% if project.features %}
+            <ul class="project-features">
+                {% for feature in project.get_features_list|slice:":3" %}
+                <li><i class="fas fa-check"></i> {{ feature }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <div class="project-tech">
+                {% for tech in project.get_technologies_list|slice:":6" %}
+                <span class="tech-badge">
+                    <i class="{{ tech|tech_icon }}"></i>
+                    {{ tech }}
+                </span>
+                {% endfor %}
+            </div>
+
+            <div class="project-links">
+                {% if project.github_url %}
+                <a href="{{ project.github_url }}" target="_blank" rel="noopener" class="project-link">
+                    <i class="fab fa-github"></i>
+                    GitHub
+                </a>
+                {% endif %}
+                {% if project.demo_url %}
+                <a href="{{ project.demo_url }}" target="_blank" rel="noopener" class="project-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    Демо
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+    {% elif project.card_size == 'small' %}
+        <!-- Small Layout (Compact) -->
+        <div class="project-content">
+            <div class="project-logo-small">
+                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
+            </div>
+            <h3 class="project-title">{{ project.title }}</h3>
+            <span class="project-status {{ project.status|status_class }}">
+                {{ project.status|status_label }}
+            </span>
+            <div class="project-tech">
+                {% for tech in project.get_technologies_list|slice:":2" %}
+                <span class="tech-badge">
+                    <i class="{{ tech|tech_icon }}"></i>
+                    {{ tech }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+
+    {% else %}
+        <!-- Regular Layout -->
+        <div class="project-image">
+            {% if project.img_main %}
+            <img src="{{ project.img_main.url }}" alt="{{ project.title }}" loading="lazy">
+            {% else %}
+            <div class="project-image-placeholder">
+                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
+            </div>
+            {% endif %}
+
+            <div class="project-logo">
+                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
+            </div>
+
+            <span class="project-status {{ project.status|status_class }}">
+                {{ project.status|status_label }}
+            </span>
+        </div>
+
+        <div class="project-content">
+            <h3 class="project-title">
+                {{ project.title }}
+                {% if project.users_count %}
+                <span class="project-users">
+                    <i class="fas fa-users"></i>
+                    {{ project.users_count }}
+                </span>
+                {% endif %}
+            </h3>
+
+            <p class="project-description">{{ project.short_description }}</p>
+
+            <div class="project-tech">
+                {% for tech in project.get_technologies_list|slice:":4" %}
+                <span class="tech-badge">
+                    <i class="{{ tech|tech_icon }}"></i>
+                    {{ tech }}
+                </span>
+                {% endfor %}
+            </div>
+
+            <div class="project-links">
+                {% if project.github_url %}
+                <a href="{{ project.github_url }}" target="_blank" rel="noopener" class="project-link">
+                    <i class="fab fa-github"></i>
+                    GitHub
+                </a>
+                {% endif %}
+                {% if project.demo_url %}
+                <a href="{{ project.demo_url }}" target="_blank" rel="noopener" class="project-link">
+                    <i class="fas fa-external-link-alt"></i>
+                    Демо
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>

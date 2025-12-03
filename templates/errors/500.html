@@ -1,0 +1,26 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+
+{% block title %}Ошибка сервера — deev.space{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card" data-aos="fade-up">
+        <div class="error-code">500</div>
+        <h1 class="error-title">Ошибка сервера</h1>
+        <p class="error-description">
+            Произошла внутренняя ошибка сервера. Мы уже работаем над её устранением.
+        </p>
+        <div class="error-actions">
+            <a href="{% url 'index' %}" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                На главную
+            </a>
+            <button onclick="location.reload()" class="btn btn-outline">
+                <i class="fas fa-redo"></i>
+                Обновить страницу
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

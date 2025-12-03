@@ -1,0 +1,52 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header" data-aos="fade-up">
+        <h1 class="page-title">
+            <span class="page-icon"><i class="fas fa-trophy"></i></span>
+            Достижения
+        </h1>
+        <p class="page-subtitle">Награды, сертификаты и профессиональные достижения</p>
+    </div>
+    
+    <!-- Achievements Grid -->
+    {% if achievements %}
+    <div class="achievements-grid">
+        {% for achievement in achievements %}
+        <a href="{{ achievement.get_absolute_url }}" class="achievement-card" data-aos="fade-up" data-aos-delay="{{ forloop.counter0 }}00">
+            <div class="achievement-icon">
+                <i class="{{ achievement.achievement_icon|default:'fas fa-trophy' }}"></i>
+            </div>
+            <div class="achievement-content">
+                <h3 class="achievement-title">{{ achievement.title }}</h3>
+                {% if achievement.sub_title %}
+                <p class="achievement-subtitle">{{ achievement.sub_title }}</p>
+                {% endif %}
+                <p class="achievement-excerpt">{{ achievement.excerpt|truncatewords:20 }}</p>
+                {% if achievement.achievement_date %}
+                <span class="achievement-date">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ achievement.achievement_date|date:"d.m.Y" }}
+                </span>
+                {% endif %}
+            </div>
+            <!-- <div class="achievement-arrow">
+                <i class="fas fa-arrow-right"></i>
+            </div> -->
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state" data-aos="fade-up">
+        <i class="fas fa-trophy"></i>
+        <h3>Достижения скоро появятся</h3>
+        <p>Здесь будут отображаться награды и сертификаты</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

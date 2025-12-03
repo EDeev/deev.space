@@ -1,0 +1,216 @@
+{% extends 'wrapper.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block og_type %}article{% endblock %}
+
+{% block extra_schema %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ article.title }}",
+    "description": "{{ article.excerpt|truncatewords:30 }}",
+    "author": {
+        "@type": "Person",
+        "name": "{{ article.author }}"
+    },
+    "datePublished": "{{ article.date|date:'c' }}",
+    "dateModified": "{{ article.updated_at|date:'c' }}",
+    {% if article.img %}
+    "image": "https://deev.space{{ article.img.url }}",
+    {% endif %}
+    "publisher": {
+        "@type": "Person",
+        "name": "{{ global_settings.owner_name }}"
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <article class="article-full">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb" data-aos="fade-up" aria-label="Навигация">
+            <a href="{% url 'index' %}">Главная</a>
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <a href="{% url 'blog' %}">Блог</a>
+            {% if article.category %}
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>
+            {% endif %}
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <span class="breadcrumb-current">{{ article.title|truncatewords:5 }}</span>
+        </nav>
+        
+        <!-- Article Header -->
+        <header class="article-header" data-aos="fade-up" data-aos-delay="100">
+            {% if article.category %}
+            <a href="{{ article.category.get_absolute_url }}" class="article-category-badge">
+                <i class="{{ article.category.icon }}"></i>
+                {{ article.category.name }}
+            </a>
+            {% endif %}
+            
+            <h1 class="article-full-title">{{ article.title }}</h1>
+            
+            {% if article.sub_title %}
+            <p class="article-full-subtitle">{{ article.sub_title }}</p>
+            {% endif %}
+            
+            <div class="article-meta-full">
+                <div class="article-author">
+                    <span class="author-avatar">{{ article.author|first_letter }}</span>
+                    <span class="author-name">{{ article.author }}</span>
+                </div>
+                <div class="article-meta-items">
+                    <span class="meta-item">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ article.date|date:"d.m.Y" }}
+                    </span>
+                    <span class="meta-item">
+                        <i class="far fa-clock"></i>
+                        {{ article.post|reading_time }} мин. чтения
+                    </span>
+                    <span class="meta-item">
+                        <i class="far fa-eye"></i>
+                        {{ article.views }} просмотров
+                    </span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Featured Image -->
+        {% if article.img %}
+        <div class="article-featured-image" data-aos="fade-up" data-aos-delay="200">
+            <img src="{{ article.img.url }}" alt="{{ article.title }}">
+        </div>
+        {% endif %}
+        
+        <!-- Article Content -->
+        <div class="article-body" data-aos="fade-up" data-aos-delay="300">
+            {{ article.post|safe|linebreaks }}
+        </div>
+        
+        <!-- Article Footer -->
+        <footer class="article-footer-full" data-aos="fade-up">
+            <!-- Likes -->
+            <div class="article-reactions">
+                <span class="reactions-label">Оцените статью:</span>
+                <div class="reactions-buttons">
+                    <button type="button" 
+                            class="vote-btn like {% if user_like.is_like %}active{% endif %}"
+                            id="article-{{ article.id }}-like-btn"
+                            onclick="toggleArticleLike({{ article.id }}, true)"
+                            {% if not user.is_authenticated %}disabled title="Войдите, чтобы оценить"{% endif %}>
+                        <i class="{% if user_like.is_like %}fas{% else %}far{% endif %} fa-thumbs-up"></i>
+                        <span id="article-{{ article.id }}-likes">{{ article.likes_count }}</span>
+                    </button>
+                    <button type="button"
+                            class="vote-btn dislike {% if user_like and not user_like.is_like %}active{% endif %}"
+                            id="article-{{ article.id }}-dislike-btn"
+                            onclick="toggleArticleLike({{ article.id }}, false)"
+                            {% if not user.is_authenticated %}disabled title="Войдите, чтобы оценить"{% endif %}>
+                        <i class="{% if user_like and not user_like.is_like %}fas{% else %}far{% endif %} fa-thumbs-down"></i>
+                        <span id="article-{{ article.id }}-dislikes">{{ article.dislikes_count }}</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Share -->
+            <div class="article-share">
+                <span class="share-label">Поделиться:</span>
+                <div class="share-buttons">
+                    <a href="https://t.me/share/url?url=https://deev.space{{ article.get_absolute_url }}&text={{ article.title }}" 
+                       target="_blank" rel="noopener" class="share-btn telegram" title="Поделиться в Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://vk.com/share.php?url=https://deev.space{{ article.get_absolute_url }}&title={{ article.title }}" 
+                       target="_blank" rel="noopener" class="share-btn vk" title="Поделиться в VK">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url=https://deev.space{{ article.get_absolute_url }}&text={{ article.title }}" 
+                       target="_blank" rel="noopener" class="share-btn twitter" title="Поделиться в Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <button type="button" class="share-btn copy" onclick="copyArticleLink()" title="Копировать ссылку">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </div>
+        </footer>
+        
+        <!-- Related Articles -->
+        {% if related_articles %}
+        <section class="related-articles" data-aos="fade-up">
+            <h3>Похожие статьи</h3>
+            <div class="related-grid">
+                {% for related in related_articles %}
+                <a href="{{ related.get_absolute_url }}" class="related-card">
+                    {% if related.img %}
+                    <img src="{{ related.img.url }}" alt="{{ related.title }}" class="related-image">
+                    {% endif %}
+                    <div class="related-content">
+                        <h4>{{ related.title }}</h4>
+                        <span class="related-date">{{ related.date|date:"d.m.Y" }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+        
+        <!-- Comments Section -->
+        <section class="comments-section" data-aos="fade-up" id="comments">
+            <h3 class="comments-title">
+                <i class="fas fa-comments"></i>
+                Комментарии
+                <span class="comments-count">({{ article.comments_count }})</span>
+            </h3>
+            
+            <!-- Comment Form -->
+            {% if user.is_authenticated %}
+            <form class="comment-form" id="comment-form" onsubmit="event.preventDefault(); submitComment({{ article.id }});">
+                {% csrf_token %}
+                <div class="comment-form-header">
+                    <span class="comment-avatar">{{ user.get_avatar_letter }}</span>
+                    <span class="comment-author-name">{{ user.username }}</span>
+                </div>
+                <textarea name="content" 
+                          class="form-control" 
+                          placeholder="Напишите комментарий..." 
+                          rows="3" 
+                          required 
+                          maxlength="2000"></textarea>
+                <div class="comment-form-footer">
+                    <span class="comment-hint">Поддерживается: <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;code&gt;</code></span>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Отправить
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="comment-auth-prompt">
+                <p>Чтобы оставить комментарий, <a href="{% url 'login' %}?next={{ request.path }}#comments">войдите</a> или <a href="{% url 'register' %}?next={{ request.path }}#comments">зарегистрируйтесь</a>.</p>
+            </div>
+            {% endif %}
+            
+            <!-- Comments List -->
+            <div class="comments-list">
+                {% include 'includes/comments.html' with comments=comments %}
+            </div>
+        </section>
+    </article>
+</div>
+
+<script>
+function copyArticleLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        showNotification('Ссылка скопирована!', 'success');
+    });
+}
+</script>
+{% endblock %}

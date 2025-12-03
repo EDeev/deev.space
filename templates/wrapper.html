@@ -1,0 +1,263 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}{{ page_title|default:"Деев Егор Викторович — Backend Developer" }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ page_description|default:"Персональный сайт backend-разработчика Егора Деева" }}{% endblock %}">
+    <meta name="author" content="{{ global_settings.owner_name }}">
+    <meta name="keywords" content="backend developer, python, django, разработчик, Егор Деев, deev.space, портфолио">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Verification -->
+    {% if global_settings.yandex_metrika_id %}
+    <meta name="yandex-verification" content="{{ global_settings.yandex_metrika_id }}">
+    {% endif %}
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ page_title|default:global_settings.owner_name }}">
+    <meta property="og:description" content="{{ page_description|default:global_settings.site_description }}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="https://deev.space{{ request.path }}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/og-default.jpg' %}{% endblock %}">
+    <meta property="og:site_name" content="{{ global_settings.site_name }}">
+    <meta property="og:locale" content="ru_RU">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ page_title|default:global_settings.owner_name }}">
+    <meta name="twitter:description" content="{{ page_description|default:global_settings.site_description }}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/og-default.jpg' %}{% endblock %}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://deev.space{{ request.path }}">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'img/favicon.ico' %}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Devicons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "{{ global_settings.owner_name }}",
+        "jobTitle": "{{ global_settings.owner_title }}",
+        "url": "https://deev.space",
+        "email": "{{ global_settings.owner_email }}",
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "{{ global_settings.owner_city }}",
+            "addressCountry": "RU"
+        },
+        "sameAs": [
+            "{{ global_settings.github_url }}",
+            "{{ global_settings.telegram_url }}"
+        ]
+    }
+    </script>
+    
+    {% block extra_schema %}{% endblock %}
+    
+    <!-- Yandex.Metrika -->
+    {% if global_settings.yandex_metrika_id and not debug %}
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+        ym({{ global_settings.yandex_metrika_id }}, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true,
+            webvisor:true
+        });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/{{ global_settings.yandex_metrika_id }}" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    {% endif %}
+
+    <script src="https://smartcaptcha.yandexcloud.net/captcha.js" defer></script>
+    
+    <!-- Google Analytics -->
+    {% if global_settings.google_analytics_id and not debug %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ global_settings.google_analytics_id }}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ global_settings.google_analytics_id }}');
+    </script>
+    {% endif %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <!-- Logo -->
+            <a href="{% url 'index' %}" class="logo" aria-label="Главная страница">
+                <img src="{% static 'img/logo.png' %}" alt="deev.space" style="max-width: 130px; height: auto;">
+            </a>
+            
+            <!-- Mobile Toggle -->
+            <button class="nav-toggle" id="navToggle" aria-label="Открыть меню" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Navigation Menu -->
+            <ul class="nav-menu" id="navMenu" role="menubar">
+                <li role="none">
+                    <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" role="menuitem">
+                        <i class="fas fa-home"></i>
+                        <span>Главная</span>
+                    </a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" role="menuitem">
+                        <i class="fas fa-user"></i>
+                        <span>Обо мне</span>
+                    </a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'projects' %}" class="nav-link {% if request.resolver_match.url_name == 'projects' %}active{% endif %}" role="menuitem">
+                        <i class="fas fa-rocket"></i>
+                        <span>Проекты</span>
+                    </a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'blog' %}" class="nav-link {% if 'blog' in request.resolver_match.url_name or request.resolver_match.url_name == 'article_detail' %}active{% endif %}" role="menuitem">
+                        <i class="fas fa-pen-fancy"></i>
+                        <span>Блог</span>
+                    </a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'achievements' %}" class="nav-link {% if request.resolver_match.url_name == 'achievements' %}active{% endif %}" role="menuitem">
+                        <i class="fas fa-trophy"></i>
+                        <span>Достижения</span>
+                    </a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'contacts' %}" class="nav-link {% if request.resolver_match.url_name == 'contacts' %}active{% endif %}" role="menuitem">
+                        <i class="fas fa-envelope"></i>
+                        <span>Контакты</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Auth -->
+            <div class="nav-auth">
+                {% if user.is_authenticated %}
+                    <div class="nav-user-info">
+                        <span class="nav-user-avatar">{{ user.get_avatar_letter }}</span>
+                        <span class="nav-user-name">{{ user.username }}</span>
+                    </div>
+                    <a href="{% url 'logout' %}" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="btn-text">Выйти</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-ghost btn-sm">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="btn-text">Войти</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages-container" id="messagesContainer">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}" role="alert">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}"></i>
+            <span>{{ message }}</span>
+            <button type="button" class="message-close" aria-label="Закрыть">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Минималистичный Footer -->
+    <footer class="footer-minimal">
+        <div class="container">
+            <div class="footer-minimal-content">
+                <!-- Logo -->
+                <a href="{% url 'index' %}" class="footer-logo">
+                    <img src="{% static 'img/logo.png' %}" alt="deev.space" style="max-width: 130px; height: auto;">
+                </a>
+
+                <!-- Social Links -->
+                <div class="footer-social-icons">
+                    {% if global_settings.telegram_url %}
+                    <a href="{{ global_settings.telegram_url }}" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    {% endif %}
+                    {% if global_settings.github_url %}
+                    <a href="{{ global_settings.github_url }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    {% endif %}
+                    {% if global_settings.vk_url %}
+                    <a href="{{ global_settings.vk_url }}" target="_blank" rel="noopener noreferrer" aria-label="VKontakte">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                    {% endif %}
+                    <a href="mailto:{{ global_settings.owner_email }}" aria-label="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+
+                <!-- Copyright -->
+                <p class="footer-copyright-minimal">
+                    © 2024–{% now "Y" %} {{ global_settings.owner_name }}
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Back to Top -->
+    <button class="back-to-top" id="backToTop" aria-label="Наверх">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+    
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
