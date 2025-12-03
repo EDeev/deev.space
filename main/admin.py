@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import (
-    CustomUser, Category, Article, Project, Skill, Comment,
-    ArticleLike, CommentLike, ContactMessage, Experience,
-    Education, SiteSettings
+    CustomUser, Category, Article, ArticleImage, ArticleFile, ArticleLink,
+    Project, ProjectStatus, Skill, Comment, ArticleLike, CommentLike,
+    ContactMessage, Experience, Education, SiteSettings
 )
 
 
@@ -25,29 +25,59 @@ class CategoryAdmin(admin.ModelAdmin):
 
     def articles_count(self, obj):
         return obj.articles_count
-
     articles_count.short_description = 'Статей'
+
+
+class ArticleImageInline(admin.TabularInline):
+    model = ArticleImage
+    extra = 1
+    fields = ['image', 'caption', 'order', 'is_inline']
+    ordering = ['order']
+
+
+class ArticleFileInline(admin.TabularInline):
+    model = ArticleFile
+    extra = 1
+    fields = ['file', 'title', 'description', 'order', 'is_inline']
+    ordering = ['order']
+
+
+class ArticleLinkInline(admin.TabularInline):
+    model = ArticleLink
+    extra = 1
+    fields = ['url', 'title', 'description', 'preview_image', 'order', 'is_inline']
+    ordering = ['order']
+    readonly_fields = []
 
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ['title', 'category', 'is_published', 'is_achievement', 'views', 'date', 'image_preview']
-    list_filter = ['is_published', 'is_achievement', 'category', 'date']
+    list_display = ['title', 'category', 'is_published', 'comments_enabled', 'is_achievement', 'views', 'date', 'image_preview']
+    list_filter = ['is_published', 'comments_enabled', 'is_achievement', 'category', 'date']
     search_fields = ['title', 'post', 'excerpt']
     prepopulated_fields = {'slug': ('title',)}
     date_hierarchy = 'date'
-    list_editable = ['is_published']
+    list_editable = ['is_published', 'comments_enabled']
     readonly_fields = ['views', 'date', 'updated_at', 'image_preview_large']
+    inlines = [ArticleImageInline, ArticleFileInline, ArticleLinkInline]
 
     fieldsets = (
         ('Основное', {
             'fields': ('title', 'slug', 'sub_title', 'excerpt', 'post')
         }),
-        ('Медиа', {
-            'fields': ('img', 'image_preview_large')
+        ('Превью (обложка)', {
+            'fields': ('img', 'show_cover_in_article', 'image_preview_large')
+        }),
+        ('Галерея изображений', {
+            'fields': ('gallery_display_mode',),
+            'description': 'Добавьте изображения ниже в инлайн-форме "Изображения статьи"'
         }),
         ('Категоризация', {
             'fields': ('category', 'author')
+        }),
+        ('Комментарии и медиа', {
+            'fields': ('comments_enabled', 'exclude_inline_from_blocks'),
+            'description': 'Управление комментариями и отображением медиа-контента'
         }),
         ('Достижение', {
             'fields': ('is_achievement', 'achievement_icon', 'achievement_date'),
@@ -60,27 +90,33 @@ class ArticleAdmin(admin.ModelAdmin):
 
     def image_preview(self, obj):
         if obj.img:
-            return format_html('<img src="{}" width="50" height="50" style="object-fit: cover; border-radius: 4px;" />',
-                               obj.img.url)
+            return format_html('<img src="{}" width="50" height="50" style="object-fit: cover; border-radius: 4px;" />', obj.img.url)
         return '-'
-
     image_preview.short_description = 'Превью'
 
     def image_preview_large(self, obj):
         if obj.img:
             return format_html('<img src="{}" width="200" style="border-radius: 8px;" />', obj.img.url)
         return 'Нет изображения'
-
     image_preview_large.short_description = 'Изображение'
+
+
+@admin.register(ProjectStatus)
+class ProjectStatusAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'color', 'is_release', 'order']
+    list_editable = ['order', 'is_release']
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ['name']
+    ordering = ['order']
 
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ['title', 'status', 'card_size', 'technologies_short', 'users_count', 'order', 'is_visible']
-    list_filter = ['status', 'card_size', 'is_visible']
-    search_fields = ['title', 'description', 'technologies']
+    list_display = ['title', 'status', 'card_size', 'languages_short', 'technologies_short', 'show_on_homepage', 'homepage_order', 'order', 'is_visible']
+    list_filter = ['status', 'card_size', 'is_visible', 'show_on_homepage']
+    search_fields = ['title', 'description', 'technologies', 'programming_languages']
     prepopulated_fields = {'slug': ('title',)}
-    list_editable = ['order', 'is_visible', 'card_size']
+    list_editable = ['order', 'is_visible', 'card_size', 'show_on_homepage', 'homepage_order']
 
     fieldsets = (
         ('Основное', {
@@ -90,17 +126,26 @@ class ProjectAdmin(admin.ModelAdmin):
             'fields': ('img_main', 'icon', 'card_size')
         }),
         ('Техническое', {
-            'fields': ('technologies', 'github_url', 'demo_url')
+            'fields': ('programming_languages', 'technologies', 'github_url', 'demo_url'),
+            'description': 'Языки программирования и технологии указываются через запятую'
         }),
-        ('Статус', {
+        ('Статус и отображение', {
             'fields': ('status', 'users_count', 'is_visible', 'order')
         }),
+        ('Главная страница', {
+            'fields': ('show_on_homepage', 'homepage_order'),
+            'description': 'Настройки отображения проекта на главной странице'
+        }),
     )
+
+    def languages_short(self, obj):
+        langs = obj.get_languages_list()[:2]
+        return ', '.join(langs) + ('...' if len(obj.get_languages_list()) > 2 else '') if langs else '-'
+    languages_short.short_description = 'Языки'
 
     def technologies_short(self, obj):
         techs = obj.get_technologies_list()[:3]
         return ', '.join(techs) + ('...' if len(obj.get_technologies_list()) > 3 else '')
-
     technologies_short.short_description = 'Технологии'
 
 
@@ -124,8 +169,7 @@ class ExperienceAdmin(admin.ModelAdmin):
 
 @admin.register(Education)
 class EducationAdmin(admin.ModelAdmin):
-    list_display = ['institution_short_display', 'degree', 'education_type', 'start_year', 'end_year', 'is_current',
-                    'order']
+    list_display = ['institution_short_display', 'degree', 'education_type', 'start_year', 'end_year', 'is_current', 'order']
     list_filter = ['education_type', 'is_current']
     list_editable = ['order']
     search_fields = ['institution', 'degree']
@@ -133,7 +177,6 @@ class EducationAdmin(admin.ModelAdmin):
 
     def institution_short_display(self, obj):
         return obj.institution_short or obj.institution[:30] + '...'
-
     institution_short_display.short_description = 'Учреждение'
 
 
@@ -148,19 +191,16 @@ class CommentAdmin(admin.ModelAdmin):
 
     def content_short(self, obj):
         return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
-
     content_short.short_description = 'Содержание'
 
     def approve_comments(self, request, queryset):
         count = queryset.update(is_approved=True)
         self.message_user(request, f'Одобрено {count} комментариев')
-
     approve_comments.short_description = 'Одобрить выбранные комментарии'
 
     def reject_comments(self, request, queryset):
         count = queryset.update(is_approved=False)
         self.message_user(request, f'Отклонено {count} комментариев')
-
     reject_comments.short_description = 'Отклонить выбранные комментарии'
 
 

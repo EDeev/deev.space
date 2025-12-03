@@ -3,7 +3,8 @@
 <div class="project-card {{ project.card_size }}"
      data-aos="fade-up"
      data-aos-delay="{{ delay|default:0 }}00"
-     data-technologies="{{ project.technologies|lower }}">
+     data-technologies="{{ project.technologies|lower }}"
+     data-languages="{{ project.programming_languages|lower }}">
 
     {% if project.card_size == 'featured' %}
         <!-- Featured Layout (Large) -->
@@ -20,9 +21,11 @@
                 <i class="{{ project.icon|default:'fas fa-code' }}"></i>
             </div>
 
-            <span class="project-status {{ project.status|status_class }}">
-                {{ project.status|status_label }}
+            {% if project.status %}
+            <span class="project-status {{ project.status.color }}">
+                {{ project.status.name }}
             </span>
+            {% endif %}
         </div>
 
         <div class="project-content">
@@ -46,7 +49,16 @@
             </ul>
             {% endif %}
 
+            <!-- Technologies -->
             <div class="project-tech">
+                {% if project.programming_languages %}
+                    {% for lang in project.get_languages_list|slice:":2" %}
+                    <span class="tech-badge lang-badge">
+                        <i class="{{ lang|tech_icon }}"></i>
+                        {{ lang }}
+                    </span>
+                    {% endfor %}
+                {% endif %}
                 {% for tech in project.get_technologies_list|slice:":6" %}
                 <span class="tech-badge">
                     <i class="{{ tech|tech_icon }}"></i>
@@ -78,11 +90,19 @@
                 <i class="{{ project.icon|default:'fas fa-code' }}"></i>
             </div>
             <h3 class="project-title">{{ project.title }}</h3>
-            <span class="project-status {{ project.status|status_class }}">
-                {{ project.status|status_label }}
+            {% if project.status %}
+            <span class="project-status {{ project.status.color }}">
+                {{ project.status.name }}
             </span>
+            {% endif %}
             <div class="project-tech">
-                {% for tech in project.get_technologies_list|slice:":2" %}
+                {% for lang in project.get_languages_list|slice:":1" %}
+                <span class="tech-badge lang-badge">
+                    <i class="{{ lang|tech_icon }}"></i>
+                    {{ lang }}
+                </span>
+                {% endfor %}
+                {% for tech in project.get_technologies_list|slice:":3" %}
                 <span class="tech-badge">
                     <i class="{{ tech|tech_icon }}"></i>
                     {{ tech }}
@@ -106,9 +126,11 @@
                 <i class="{{ project.icon|default:'fas fa-code' }}"></i>
             </div>
 
-            <span class="project-status {{ project.status|status_class }}">
-                {{ project.status|status_label }}
+            {% if project.status %}
+            <span class="project-status {{ project.status.color }}">
+                {{ project.status.name }}
             </span>
+            {% endif %}
         </div>
 
         <div class="project-content">
@@ -124,14 +146,25 @@
 
             <p class="project-description">{{ project.short_description }}</p>
 
+            <!-- Languages -->
+
             <div class="project-tech">
-                {% for tech in project.get_technologies_list|slice:":4" %}
+                {% if project.programming_languages %}
+                    {% for lang in project.get_languages_list|slice:":2" %}
+                    <span class="tech-badge lang-badge">
+                        <i class="{{ lang|tech_icon }}"></i>
+                        {{ lang }}
+                    </span>
+                    {% endfor %}
+                {% endif %}
+                {% for tech in project.get_technologies_list|slice:":6" %}
                 <span class="tech-badge">
                     <i class="{{ tech|tech_icon }}"></i>
                     {{ tech }}
                 </span>
                 {% endfor %}
             </div>
+
 
             <div class="project-links">
                 {% if project.github_url %}

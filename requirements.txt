@@ -8,3 +8,4 @@ python-telegram-bot>=20.0
 vk-api>=11.9.9
 django-recaptcha>=3.0.0
 gunicorn>=21.0.0
+beautifulsoup4>=4.12.0

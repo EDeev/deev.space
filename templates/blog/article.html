@@ -82,25 +82,121 @@
             </div>
         </header>
         
-        <!-- Featured Image -->
-        {% if article.img %}
+        <!-- Featured Image (если включено показывать в статье) -->
+        {% if article.img and article.show_cover_in_article %}
         <div class="article-featured-image" data-aos="fade-up" data-aos-delay="200">
             <img src="{{ article.img.url }}" alt="{{ article.title }}">
         </div>
         {% endif %}
-        
+
         <!-- Article Content -->
         <div class="article-body" data-aos="fade-up" data-aos-delay="300">
             {{ article.post|safe|linebreaks }}
         </div>
-        
+
+        <!-- Image Gallery -->
+        {% if gallery_images %}
+        <section class="article-gallery" data-aos="fade-up">
+            <h3><i class="fas fa-images"></i> Изображения</h3>
+            {% if article.gallery_display_mode == 'carousel' %}
+            <div class="gallery-carousel" id="articleCarousel">
+                <div class="carousel-container">
+                    {% for image in gallery_images %}
+                    <div class="carousel-slide {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.image.url }}" alt="{{ image.caption|default:article.title }}">
+                        {% if image.caption %}
+                        <p class="carousel-caption">{{ image.caption }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if gallery_images.count > 1 %}
+                <button class="carousel-btn carousel-prev" onclick="carouselPrev()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn carousel-next" onclick="carouselNext()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="carousel-dots">
+                    {% for image in gallery_images %}
+                    <span class="carousel-dot {% if forloop.first %}active{% endif %}" onclick="carouselGoTo({{ forloop.counter0 }})"></span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="gallery-collage">
+                {% for image in gallery_images %}
+                <div class="collage-item" onclick="openLightbox('{{ image.image.url }}', '{{ image.caption|default:'' }}')">
+                    <img src="{{ image.image.url }}" alt="{{ image.caption|default:article.title }}">
+                    {% if image.caption %}
+                    <p class="collage-caption">{{ image.caption }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
+
+        <!-- Attached Files -->
+        {% if attached_files %}
+        <section class="article-files" data-aos="fade-up">
+            <h3><i class="fas fa-paperclip"></i> Прикреплённые файлы</h3>
+            <div class="files-list">
+                {% for file in attached_files %}
+                <a href="{{ file.file.url }}" target="_blank" class="file-item" download>
+                    <div class="file-icon">
+                        <i class="fas fa-file-{{ file.file_extension|lower }}"></i>
+                    </div>
+                    <div class="file-info">
+                        <span class="file-name">{{ file.title }}</span>
+                        {% if file.description %}
+                        <span class="file-desc">{{ file.description }}</span>
+                        {% endif %}
+                        <span class="file-meta">{{ file.file_extension }} • {{ file.file_size }}</span>
+                    </div>
+                    <div class="file-download">
+                        <i class="fas fa-download"></i>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Attached Links -->
+        {% if attached_links %}
+        <section class="article-links" data-aos="fade-up">
+            <h3><i class="fas fa-link"></i> Ссылки</h3>
+            <div class="links-grid">
+                {% for link in attached_links %}
+                <a href="{{ link.url }}" target="_blank" rel="noopener" class="link-card">
+                    {% if link.preview_image %}
+                    <div class="link-image">
+                        <img src="{{ link.preview_image }}" alt="{{ link.title }}">
+                    </div>
+                    {% endif %}
+                    <div class="link-content">
+                        <h4 class="link-title">{{ link.title|default:link.url }}</h4>
+                        {% if link.description %}
+                        <p class="link-description">{{ link.description|truncatewords:20 }}</p>
+                        {% endif %}
+                        <span class="link-domain"><i class="fas fa-external-link-alt"></i> {{ link.domain }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
         <!-- Article Footer -->
         <footer class="article-footer-full" data-aos="fade-up">
             <!-- Likes -->
             <div class="article-reactions">
                 <span class="reactions-label">Оцените статью:</span>
                 <div class="reactions-buttons">
-                    <button type="button" 
+                    <button type="button"
                             class="vote-btn like {% if user_like.is_like %}active{% endif %}"
                             id="article-{{ article.id }}-like-btn"
                             onclick="toggleArticleLike({{ article.id }}, true)"
@@ -118,21 +214,18 @@
                     </button>
                 </div>
             </div>
-            
+
             <!-- Share -->
             <div class="article-share">
                 <span class="share-label">Поделиться:</span>
                 <div class="share-buttons">
-                    <a href="https://t.me/share/url?url=https://deev.space{{ article.get_absolute_url }}&text={{ article.title }}" 
-                       target="_blank" rel="noopener" class="share-btn telegram" title="Поделиться в Telegram">
+                    <a href="https://t.me/share/url?url=https://deev.space{{ article.get_absolute_url }}&text={{ article.title }}" target="_blank" rel="noopener" class="share-btn telegram" title="Поделиться в Telegram">
                         <i class="fab fa-telegram"></i>
                     </a>
-                    <a href="https://vk.com/share.php?url=https://deev.space{{ article.get_absolute_url }}&title={{ article.title }}" 
-                       target="_blank" rel="noopener" class="share-btn vk" title="Поделиться в VK">
+                    <a href="https://vk.com/share.php?url=https://deev.space{{ article.get_absolute_url }}&title={{ article.title }}" target="_blank" rel="noopener" class="share-btn vk" title="Поделиться в VK">
                         <i class="fab fa-vk"></i>
                     </a>
-                    <a href="https://twitter.com/intent/tweet?url=https://deev.space{{ article.get_absolute_url }}&text={{ article.title }}" 
-                       target="_blank" rel="noopener" class="share-btn twitter" title="Поделиться в Twitter">
+                    <a href="https://twitter.com/intent/tweet?url=https://deev.space{{ article.get_absolute_url }}&text={{ article.title }}" target="_blank" rel="noopener" class="share-btn twitter" title="Поделиться в Twitter">
                         <i class="fab fa-twitter"></i>
                     </a>
                     <button type="button" class="share-btn copy" onclick="copyArticleLink()" title="Копировать ссылку">
@@ -141,7 +234,7 @@
                 </div>
             </div>
         </footer>
-        
+
         <!-- Related Articles -->
         {% if related_articles %}
         <section class="related-articles" data-aos="fade-up">
@@ -161,15 +254,16 @@
             </div>
         </section>
         {% endif %}
-        
+
         <!-- Comments Section -->
+        {% if article.comments_enabled %}
         <section class="comments-section" data-aos="fade-up" id="comments">
             <h3 class="comments-title">
                 <i class="fas fa-comments"></i>
                 Комментарии
                 <span class="comments-count">({{ article.comments_count }})</span>
             </h3>
-            
+
             <!-- Comment Form -->
             {% if user.is_authenticated %}
             <form class="comment-form" id="comment-form" onsubmit="event.preventDefault(); submitComment({{ article.id }});">
@@ -178,11 +272,11 @@
                     <span class="comment-avatar">{{ user.get_avatar_letter }}</span>
                     <span class="comment-author-name">{{ user.username }}</span>
                 </div>
-                <textarea name="content" 
-                          class="form-control" 
-                          placeholder="Напишите комментарий..." 
-                          rows="3" 
-                          required 
+                <textarea name="content"
+                          class="form-control"
+                          placeholder="Напишите комментарий..."
+                          rows="3"
+                          required
                           maxlength="2000"></textarea>
                 <div class="comment-form-footer">
                     <span class="comment-hint">Поддерживается: <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code>, <code>&lt;code&gt;</code></span>
@@ -197,13 +291,26 @@
                 <p>Чтобы оставить комментарий, <a href="{% url 'login' %}?next={{ request.path }}#comments">войдите</a> или <a href="{% url 'register' %}?next={{ request.path }}#comments">зарегистрируйтесь</a>.</p>
             </div>
             {% endif %}
-            
+
             <!-- Comments List -->
             <div class="comments-list">
                 {% include 'includes/comments.html' with comments=comments %}
             </div>
         </section>
+        {% else %}
+        <div class="comments-disabled" data-aos="fade-up">
+            <i class="fas fa-comment-slash"></i>
+            <p>Комментарии к этой статье отключены</p>
+        </div>
+        {% endif %}
     </article>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <p id="lightbox-caption"></p>
 </div>
 
 <script>
@@ -212,5 +319,58 @@ function copyArticleLink() {
         showNotification('Ссылка скопирована!', 'success');
     });
 }
+
+// Carousel functionality
+let currentSlide = 0;
+const slides = document.querySelectorAll('.carousel-slide');
+const dots = document.querySelectorAll('.carousel-dot');
+
+function showSlide(index) {
+    if (!slides.length) return;
+
+    if (index >= slides.length) currentSlide = 0;
+    if (index < 0) currentSlide = slides.length - 1;
+
+    slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        if (dots[i]) dots[i].classList.remove('active');
+    });
+
+    slides[currentSlide].classList.add('active');
+    if (dots[currentSlide]) dots[currentSlide].classList.add('active');
+}
+
+function carouselNext() {
+    currentSlide++;
+    showSlide(currentSlide);
+}
+
+function carouselPrev() {
+    currentSlide--;
+    showSlide(currentSlide);
+}
+
+function carouselGoTo(index) {
+    currentSlide = index;
+    showSlide(currentSlide);
+}
+
+// Lightbox functionality
+function openLightbox(src, caption) {
+    document.getElementById('lightbox').style.display = 'flex';
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = caption;
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Close lightbox on escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+});
 </script>
 {% endblock %}

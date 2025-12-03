@@ -14,7 +14,7 @@ import json
 import logging
 
 from .models import (
-    Article, Project, Skill, Comment, ArticleLike, CommentLike,
+    Article, Project, ProjectStatus, Skill, Comment, ArticleLike, CommentLike,
     ContactMessage, Experience, Education, Category, SiteSettings
 )
 from .forms import RegisterForm, LoginForm, CommentForm, ContactForm
@@ -41,9 +41,13 @@ class IndexView(TemplateView):
         context['recent_articles'] = Article.objects.filter(
             is_published=True, is_achievement=False
         ).select_related('category')[:3]
+
+        # Только проекты с галочкой "Показывать на главной", сортировка по homepage_order
         context['featured_projects'] = Project.objects.filter(
-            is_visible=True
-        ).order_by('order', '-date')[:6]
+            is_visible=True,
+            show_on_homepage=True
+        ).order_by('homepage_order', 'order', '-date')[:6]
+
         context['experiences'] = Experience.objects.all()[:2]
 
         context['page_title'] = f'{site_settings.owner_name} — {site_settings.owner_title}'
@@ -101,20 +105,27 @@ class ProjectsView(ListView):
     context_object_name = 'projects'
 
     def get_queryset(self):
-        queryset = Project.objects.filter(is_visible=True)
+        queryset = Project.objects.filter(is_visible=True).select_related('status')
+
+        lang_filter = self.request.GET.get('lang')
         tech_filter = self.request.GET.get('tech')
         status_filter = self.request.GET.get('status')
+
+        if lang_filter:
+            queryset = queryset.filter(programming_languages__icontains=lang_filter)
 
         if tech_filter:
             queryset = queryset.filter(technologies__icontains=tech_filter)
 
-        # Исправление фильтрации по статусу
         if status_filter:
-            if status_filter == 'in_development':
-                # Включаем оба статуса: in_development и beta
-                queryset = queryset.filter(status__in=['in_development', 'beta'])
-            else:
-                queryset = queryset.filter(status=status_filter)
+            if status_filter == 'completed':
+                # Только проекты со статусом, помеченным как is_release
+                queryset = queryset.filter(status__is_release=True)
+            elif status_filter == 'in_development':
+                # Все остальные (не релиз)
+                queryset = queryset.filter(
+                    Q(status__is_release=False) | Q(status__isnull=True)
+                )
 
         return queryset.order_by('order', '-date')
 
@@ -122,34 +133,43 @@ class ProjectsView(ListView):
         context = super().get_context_data(**kwargs)
         site_settings = get_site_settings()
 
-        # Получаем все видимые проекты для правильной фильтрации
-        base_queryset = Project.objects.filter(is_visible=True)
+        base_queryset = Project.objects.filter(is_visible=True).select_related('status')
 
+        lang_filter = self.request.GET.get('lang')
         tech_filter = self.request.GET.get('tech')
         status_filter = self.request.GET.get('status')
 
+        if lang_filter:
+            base_queryset = base_queryset.filter(programming_languages__icontains=lang_filter)
         if tech_filter:
             base_queryset = base_queryset.filter(technologies__icontains=tech_filter)
 
-        # Разделение по статусам с учетом фильтра
+        # Разделение по статусам
         if status_filter == 'completed':
-            context['completed_projects'] = base_queryset.filter(status='completed').order_by('order', '-date')
+            context['completed_projects'] = base_queryset.filter(status__is_release=True).order_by('order', '-date')
             context['dev_projects'] = Project.objects.none()
         elif status_filter == 'in_development':
             context['completed_projects'] = Project.objects.none()
-            context['dev_projects'] = base_queryset.filter(status__in=['in_development', 'beta']).order_by('order',
-                                                                                                           '-date')
+            context['dev_projects'] = base_queryset.filter(
+                Q(status__is_release=False) | Q(status__isnull=True)
+            ).order_by('order', '-date')
         else:
-            context['completed_projects'] = base_queryset.filter(status='completed').order_by('order', '-date')
-            context['dev_projects'] = base_queryset.filter(status__in=['in_development', 'beta']).order_by('order',
-                                                                                                           '-date')
+            context['completed_projects'] = base_queryset.filter(status__is_release=True).order_by('order', '-date')
+            context['dev_projects'] = base_queryset.filter(
+                Q(status__is_release=False) | Q(status__isnull=True)
+            ).order_by('order', '-date')
 
-        # Все технологии для фильтра
+        # Собираем все языки программирования для фильтра
+        all_languages = set()
         all_techs = set()
         for project in Project.objects.filter(is_visible=True):
+            all_languages.update(project.get_languages_list())
             all_techs.update(project.get_technologies_list())
+
+        context['all_languages'] = sorted(all_languages)
         context['all_technologies'] = sorted(all_techs)
 
+        context['current_lang'] = self.request.GET.get('lang', '')
         context['current_tech'] = self.request.GET.get('tech', '')
         context['current_status'] = self.request.GET.get('status', '')
 
@@ -228,11 +248,15 @@ class ArticleDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         article = self.object
 
-        context['comments'] = article.comments.filter(
-            is_approved=True, parent=None
-        ).select_related('user').prefetch_related(
-            'replies__user', 'replies__replies__user'
-        ).order_by('-created_at')
+        # Комментарии только если включены
+        if article.comments_enabled:
+            context['comments'] = article.comments.filter(
+                is_approved=True, parent=None
+            ).select_related('user').prefetch_related(
+                'replies__user', 'replies__replies__user'
+            ).order_by('-created_at')
+        else:
+            context['comments'] = []
 
         context['comment_form'] = CommentForm()
 
@@ -246,6 +270,24 @@ class ArticleDetailView(DetailView):
         context['related_articles'] = Article.objects.filter(
             is_published=True, is_achievement=False, category=article.category
         ).exclude(pk=article.pk)[:3] if article.category else Article.objects.none()
+
+        # Галерея изображений
+        gallery_images = article.gallery_images.all()
+        if article.exclude_inline_from_blocks:
+            gallery_images = gallery_images.filter(is_inline=False)
+        context['gallery_images'] = gallery_images
+
+        # Прикреплённые файлы
+        attached_files = article.attached_files.all()
+        if article.exclude_inline_from_blocks:
+            attached_files = attached_files.filter(is_inline=False)
+        context['attached_files'] = attached_files
+
+        # Прикреплённые ссылки
+        attached_links = article.attached_links.all()
+        if article.exclude_inline_from_blocks:
+            attached_links = attached_links.filter(is_inline=False)
+        context['attached_links'] = attached_links
 
         context['page_title'] = f'{article.title} — Блог'
         context['page_description'] = article.excerpt or article.post[:160]
@@ -381,6 +423,11 @@ def logout_view(request):
 def add_comment(request, article_id):
     """Добавление комментария к статье."""
     article = get_object_or_404(Article, id=article_id, is_published=True)
+
+    # Проверяем, включены ли комментарии
+    if not article.comments_enabled:
+        return JsonResponse({'success': False, 'error': 'Комментарии отключены для этой статьи'}, status=403)
+
     form = CommentForm(request.POST)
 
     if form.is_valid():
