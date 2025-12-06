@@ -384,7 +384,8 @@ def register_view(request):
 
     return render(request, 'auth/register.html', {
         'form': form,
-        'page_title': 'Регистрация — deev.space'
+        'page_title': 'Регистрация — deev.space',
+        'smartcaptcha_client_key': settings.SMARTCAPTCHA_CLIENT_KEY
     })
 
 
