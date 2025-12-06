@@ -13,6 +13,8 @@
         initBackToTop();
         initMessages();
         initContactForm();
+        initCodeBlocks();
+        addHeaderAnchors();
     });
 
     // ===== AOS Animation =====
@@ -452,5 +454,99 @@
             showNotification('Ошибка копирования', 'error');
         });
     };
+
+    // ===== Code Copy Functionality =====
+    function initCodeBlocks() {
+        const codeBlocks = document.querySelectorAll('.article-body pre');
+        
+        codeBlocks.forEach((pre) => {
+            // Проверяем, не добавлена ли уже кнопка
+            if (pre.querySelector('.code-copy-btn')) {
+                return;
+            }
+            
+            const codeElement = pre.querySelector('code');
+            if (!codeElement) return;
+            
+            // Создаём кнопку копирования
+            const copyButton = document.createElement('button');
+            copyButton.className = 'code-copy-btn';
+            copyButton.type = 'button';
+            copyButton.setAttribute('aria-label', 'Копировать код');
+            copyButton.innerHTML = '<i class="fas fa-copy"></i><span class="copy-text">Копировать</span>';
+            
+            // Обработчик клика
+            copyButton.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                // Получаем текст кода без HTML-тегов
+                const codeText = codeElement.textContent || codeElement.innerText;
+                
+                try {
+                    await navigator.clipboard.writeText(codeText);
+                    
+                    // Изменяем визуальное состояние кнопки
+                    copyButton.innerHTML = '<i class="fas fa-check"></i><span class="copy-text">Сохранено!</span>';
+                    copyButton.classList.add('copied');
+                    
+                    // Возвращаем исходное состояние через 2 секунды
+                    setTimeout(() => {
+                        copyButton.innerHTML = '<i class="fas fa-copy"></i><span class="copy-text">Копировать</span>';
+                        copyButton.classList.remove('copied');
+                    }, 2000);
+                    
+                } catch (err) {
+                    console.error('Ошибка при копировании:', err);
+                    
+                    // Fallback для старых браузеров
+                    const textArea = document.createElement('textarea');
+                    textArea.value = codeText;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    
+                    try {
+                        document.execCommand('copy');
+                        copyButton.innerHTML = '<i class="fas fa-check"></i><span class="copy-text">Сохранено!</span>';
+                        copyButton.classList.add('copied');
+                        
+                        setTimeout(() => {
+                            copyButton.innerHTML = '<i class="fas fa-copy"></i><span class="copy-text">Копировать</span>';
+                            copyButton.classList.remove('copied');
+                        }, 2000);
+                    } catch (err2) {
+                        showNotification('Не удалось скопировать код', 'error');
+                    }
+                    
+                    document.body.removeChild(textArea);
+                }
+            });
+            
+            // Добавляем кнопку в блок кода
+            pre.style.position = 'relative';
+            pre.appendChild(copyButton);
+        });
+    }
+
+    function addHeaderAnchors() {
+        const headers = document.querySelectorAll('.article-body h2, .article-body h3');
+        headers.forEach(header => {
+            const id = header.textContent
+                .toLowerCase()
+                .replace(/[^a-zа-яё0-9]+/g, '-')
+                .replace(/^-|-$/g, '');
+            
+            header.id = id;
+            
+            const anchor = document.createElement('a');
+            anchor.className = 'header-anchor';
+            anchor.href = `#${id}`;
+            anchor.innerHTML = '<i class="fas fa-link"></i>';
+            anchor.setAttribute('aria-label', 'Ссылка на раздел');
+            
+            header.appendChild(anchor);
+        });
+    }
 
 })();
