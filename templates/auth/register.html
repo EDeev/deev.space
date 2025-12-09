@@ -51,29 +51,64 @@
                     <i class="fas fa-lock"></i>
                     Пароль *
                 </label>
-                {{ form.password }}
+                <div class="password-input-wrapper">
+                    {{ form.password }}
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('id_password', this)" aria-label="Показать пароль">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
                 {% if form.password.errors %}
                 <span class="form-error">{{ form.password.errors.0 }}</span>
                 {% endif %}
             </div>
-            
+
             <div class="form-group">
                 <label for="id_password_confirm" class="form-label">
                     <i class="fas fa-lock"></i>
                     Подтвердите пароль *
                 </label>
-                {{ form.password_confirm }}
+                <div class="password-input-wrapper">
+                    {{ form.password_confirm }}
+                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility('id_password_confirm', this)" aria-label="Показать пароль">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
                 {% if form.password_confirm.errors %}
                 <span class="form-error">{{ form.password_confirm.errors.0 }}</span>
                 {% endif %}
             </div>
             
             <div class="form-group captcha-group">
-                {{ form.captcha }}
+                <div class="smart-captcha-wrapper" style="height: 100px;">
+                    <div id="register-captcha-container"
+                         class="smart-captcha"
+                         data-sitekey="{{ smartcaptcha_client_key }}"
+                         data-hl="ru"></div>
+                    {{ form.captcha }}
+                </div>
                 {% if form.captcha.errors %}
                 <span class="form-error">{{ form.captcha.errors.0 }}</span>
                 {% endif %}
             </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                function initRegisterCaptcha() {
+                    if (window.smartCaptcha) {
+                        window.smartCaptcha.render('register-captcha-container', {
+                            sitekey: '{{ smartcaptcha_client_key }}',
+                            hl: 'ru',
+                            callback: function(token) {
+                                document.getElementById('smart-captcha-token').value = token;
+                            }
+                        });
+                    } else {
+                        setTimeout(initRegisterCaptcha, 100);
+                    }
+                }
+                initRegisterCaptcha();
+            });
+            </script>
             
             <button type="submit" class="btn btn-primary btn-lg btn-full">
                 <i class="fas fa-user-plus"></i>

@@ -30,11 +30,11 @@
             <div class="search-input-wrapper">
                 <i class="fas fa-search"></i>
                 <input type="text" name="q" value="{{ search_query }}" placeholder="Поиск статей..." class="search-input">
-                {% if search_query %}
+                <!-- {% if search_query %}
                 <a href="{% url 'blog' %}" class="search-clear">
                     <i class="fas fa-times"></i>
                 </a>
-                {% endif %}
+                {% endif %} -->
             </div>
             <button type="submit" class="btn btn-primary">Найти</button>
         </form>
@@ -97,11 +97,13 @@
                     <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
                 </h2>
                 
+                <!--
                 {% if article.sub_title %}
                 <p class="article-subtitle">{{ article.sub_title }}</p>
                 {% endif %}
+                -->
                 
-                <p class="article-excerpt">{{ article.excerpt|truncatewords:25 }}</p>
+                <p class="article-excerpt">{{ article.excerpt|truncatewords:30 }}</p>
                 
                 <div class="article-footer">
                     <div class="article-stats">

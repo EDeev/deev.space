@@ -112,38 +112,6 @@
             </div>
         </div>
 
-        <!-- Social Links Card -->
-        <!-- <div class="bento-card bento-socials" data-aos="fade-up" data-aos-delay="200">
-            <h3 class="bento-card-title">
-                <i class="fas fa-share-alt"></i>
-                Социальные сети
-            </h3>
-            <div class="socials-grid">
-                {% if site_settings.telegram_url %}
-                <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener" class="social-link">
-                    <i class="fab fa-telegram"></i>
-                    <span>Telegram</span>
-                </a>
-                {% endif %}
-                {% if site_settings.github_url %}
-                <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener" class="social-link">
-                    <i class="fab fa-github"></i>
-                    <span>GitHub</span>
-                </a>
-                {% endif %}
-                <a href="mailto:{{ site_settings.owner_email }}" class="social-link">
-                    <i class="fas fa-envelope"></i>
-                    <span>Email</span>
-                </a>
-                {% if site_settings.owner_phone %}
-                <a href="tel:{{ site_settings.owner_phone|cut:' '|cut:'('|cut:')'|cut:'-' }}" class="social-link">
-                    <i class="fas fa-phone"></i>
-                    <span>Телефон</span>
-                </a>
-                {% endif %}
-            </div>
-        </div> -->
-
         <!-- Skills Card -->
         <div class="bento-card skills-full" data-aos="fade-up" data-aos-delay="200"> <!-- skills-full in class -->
             <div class="skills-header">
@@ -200,7 +168,7 @@
             
             <!-- GitHub CTA Card -->
             {% if site_settings.github_url %}
-            <div class="project-card github-cta" data-aos="fade-up" data-aos-delay="500">
+            <div class="project-card github-cta regular" data-aos="fade-up" data-aos-delay="500">
                 <div class="github-cta-content">
                     <i class="fab fa-github"></i>
                     <p>Ещё 12 проектов на GitHub</p>
