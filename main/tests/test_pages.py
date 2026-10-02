@@ -61,3 +61,17 @@ def test_all_static_references_exist():
         if not Path(settings.BASE_DIR, 'static', ref).exists()
     ]
     assert not missing
+
+
+@pytest.mark.django_db
+def test_populate_demo_fills_site(client):
+    import io
+
+    from django.core.management import call_command
+
+    from main.models import Article, Project
+
+    call_command('populate_demo', stdout=io.StringIO())
+    assert Project.objects.exists() and Article.objects.exists()
+    for name in ('index', 'projects', 'blog', 'about'):
+        assert client.get(reverse(name), HTTP_USER_AGENT=UA).status_code == 200

@@ -10,10 +10,11 @@ from django.core.management.base import BaseCommand
 
 from main.models import (
     Article,
-    ArticleCategory,
+    Category,
     Education,
     Experience,
     Project,
+    ProjectStatus,
     SiteSettings,
     Skill,
 )
@@ -61,6 +62,16 @@ class Command(BaseCommand):
         for data in skills_data:
             Skill.objects.get_or_create(**data)
 
+        # Статусы проектов
+        statuses = {}
+        for order, (slug, name, color, is_release) in enumerate([
+            ('completed', 'Релиз', 'success', True),
+            ('in_development', 'В разработке', 'warning', False),
+        ]):
+            statuses[slug], _ = ProjectStatus.objects.get_or_create(
+                slug=slug, defaults={'name': name, 'color': color, 'is_release': is_release, 'order': order}
+            )
+
         # Создание проектов
         projects_data = [
             {
@@ -68,17 +79,17 @@ class Command(BaseCommand):
                 'slug': 'taskmaster-pro',
                 'short_description': 'Система управления задачами с AI-рекомендациями',
                 'technologies': 'Python, Django, PostgreSQL, Redis, Celery',
-                'status': 'completed',
+                'status': statuses['completed'],
                 'card_size': 'featured',
                 'icon': 'fas fa-tasks',
-                'is_featured': True,
+                'show_on_homepage': True,
             },
             {
                 'title': 'DataParser',
                 'slug': 'dataparser',
                 'short_description': 'Высоконагруженный парсер данных с автоматизацией',
                 'technologies': 'Python, Scrapy, PostgreSQL, Docker',
-                'status': 'completed',
+                'status': statuses['completed'],
                 'card_size': 'regular',
                 'icon': 'fas fa-database',
             },
@@ -87,7 +98,7 @@ class Command(BaseCommand):
                 'slug': 'api-gateway',
                 'short_description': 'Микросервисный API Gateway с авторизацией',
                 'technologies': 'Python, FastAPI, Redis, JWT',
-                'status': 'in_development',
+                'status': statuses['in_development'],
                 'card_size': 'regular',
                 'icon': 'fas fa-server',
             },
@@ -104,10 +115,10 @@ class Command(BaseCommand):
         ]
 
         for data in categories_data:
-            ArticleCategory.objects.get_or_create(slug=data['slug'], defaults=data)
+            Category.objects.get_or_create(slug=data['slug'], defaults=data)
 
         # Создание статей
-        python_cat = ArticleCategory.objects.get(slug='python')
+        python_cat = Category.objects.get(slug='python')
         articles_data = [
             {
                 'title': 'Асинхронное программирование в Python',
@@ -122,7 +133,7 @@ class Command(BaseCommand):
                 'slug': 'django-orm-optimization',
                 'excerpt': 'Как ускорить запросы к базе данных...',
                 'post': '<p>Полный текст статьи об оптимизации Django ORM...</p>',
-                'category': ArticleCategory.objects.get(slug='django'),
+                'category': Category.objects.get(slug='django'),
                 'is_published': True,
             },
         ]
