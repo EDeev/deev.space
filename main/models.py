@@ -382,10 +382,12 @@ class Project(models.Model):
 class Skill(models.Model):
     """Модель навыков и технологий."""
     CATEGORY_CHOICES = [
+        ('languages', 'Languages'),
         ('backend', 'Backend'),
-        ('frontend', 'Frontend'),
-        ('devops', 'DevOps'),
+        ('ai', 'AI / LLM'),
         ('database', 'Database'),
+        ('devops', 'DevOps'),
+        ('frontend', 'Frontend'),
         ('tools', 'Tools'),
     ]
 
@@ -536,15 +538,37 @@ class ArticleLike(models.Model):
         Article, on_delete=models.CASCADE, related_name='likes', verbose_name='Статья'
     )
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='article_likes', verbose_name='Пользователь'
+        CustomUser, on_delete=models.CASCADE, related_name='article_likes', verbose_name='Пользователь',
+        null=True, blank=True
     )
+    visitor_id = models.CharField(max_length=64, blank=True, db_index=True, verbose_name='ID посетителя')
+    ip_hash = models.CharField(max_length=64, blank=True, db_index=True, verbose_name='Хэш IP')
     is_like = models.BooleanField(verbose_name='Лайк')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
 
     class Meta:
         verbose_name = 'Оценка статьи'
         verbose_name_plural = 'Оценки статей'
-        unique_together = ['article', 'user']
+        constraints = [
+            models.UniqueConstraint(fields=['article', 'user'], condition=models.Q(user__isnull=False),
+                                    name='uniq_articlelike_user'),
+            models.UniqueConstraint(fields=['article', 'visitor_id'], condition=~models.Q(visitor_id=''),
+                                    name='uniq_articlelike_visitor'),
+        ]
+
+
+class ArticleView(models.Model):
+    """Уникальный просмотр статьи (один на посетителя)."""
+    article = models.ForeignKey(
+        Article, on_delete=models.CASCADE, related_name='unique_views', verbose_name='Статья'
+    )
+    visitor_id = models.CharField(max_length=64, verbose_name='ID посетителя')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
+
+    class Meta:
+        verbose_name = 'Уникальный просмотр'
+        verbose_name_plural = 'Уникальные просмотры'
+        unique_together = ['article', 'visitor_id']
 
 
 class CommentLike(models.Model):
@@ -553,15 +577,23 @@ class CommentLike(models.Model):
         Comment, on_delete=models.CASCADE, related_name='comment_likes', verbose_name='Комментарий'
     )
     user = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name='comment_likes', verbose_name='Пользователь'
+        CustomUser, on_delete=models.CASCADE, related_name='comment_likes', verbose_name='Пользователь',
+        null=True, blank=True
     )
+    visitor_id = models.CharField(max_length=64, blank=True, db_index=True, verbose_name='ID посетителя')
+    ip_hash = models.CharField(max_length=64, blank=True, db_index=True, verbose_name='Хэш IP')
     is_like = models.BooleanField(verbose_name='Лайк')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
 
     class Meta:
         verbose_name = 'Оценка комментария'
         verbose_name_plural = 'Оценки комментариев'
-        unique_together = ['comment', 'user']
+        constraints = [
+            models.UniqueConstraint(fields=['comment', 'user'], condition=models.Q(user__isnull=False),
+                                    name='uniq_commentlike_user'),
+            models.UniqueConstraint(fields=['comment', 'visitor_id'], condition=~models.Q(visitor_id=''),
+                                    name='uniq_commentlike_visitor'),
+        ]
 
 
 class ContactMessage(models.Model):
@@ -588,7 +620,7 @@ class SiteSettings(models.Model):
     """Настройки сайта (Singleton)."""
     site_name = models.CharField(max_length=100, default='deev.space', verbose_name='Название сайта')
     site_description = models.TextField(blank=True, verbose_name='Описание сайта')
-    owner_name = models.CharField(max_length=200, default='Деев Егор Викторович', verbose_name='Имя владельца')
+    owner_name = models.CharField(max_length=200, default='Деев Егор', verbose_name='Имя владельца')
     owner_title = models.CharField(max_length=200, default='Backend Developer', verbose_name='Должность')
     owner_bio = models.TextField(blank=True, verbose_name='О себе')
     owner_photo = models.ImageField(upload_to='site/', blank=True, null=True, verbose_name='Фото владельца')
@@ -602,6 +634,10 @@ class SiteSettings(models.Model):
     resume_file = models.FileField(upload_to='site/', blank=True, null=True, verbose_name='Файл резюме')
     yandex_metrika_id = models.CharField(max_length=20, blank=True, verbose_name='ID Яндекс.Метрики')
     google_analytics_id = models.CharField(max_length=20, blank=True, verbose_name='ID Google Analytics')
+    open_to_work = models.BooleanField(default=True, verbose_name='Открыт к предложениям',
+                                       help_text='Показывать статус на главной')
+    work_format = models.CharField(max_length=100, blank=True, default='Удалённо или гибрид, фриланс',
+                                   verbose_name='Формат работы')
 
     class Meta:
         verbose_name = 'Настройки сайта'

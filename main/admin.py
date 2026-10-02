@@ -1,4 +1,8 @@
+import csv
+import json
+
 from django.contrib import admin
+from django.http import HttpResponse
 from django.utils.html import format_html
 from .models import (
     CustomUser, Category, Article, ArticleImage, ArticleFile, ArticleLink,
@@ -58,7 +62,7 @@ class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     date_hierarchy = 'date'
     list_editable = ['is_published', 'comments_enabled']
-    readonly_fields = ['views', 'date', 'updated_at', 'image_preview_large']
+    readonly_fields = ['views', 'date', 'updated_at', 'image_preview_large', 'likes_summary']
     inlines = [ArticleImageInline, ArticleFileInline, ArticleLinkInline]
 
     fieldsets = (
@@ -86,7 +90,17 @@ class ArticleAdmin(admin.ModelAdmin):
         ('Публикация', {
             'fields': ('is_published', 'views', 'date', 'updated_at')
         }),
+        ('Лайки и дизлайки', {
+            'fields': ('likes_summary',),
+        }),
     )
+
+    @admin.display(description='Оценки сейчас')
+    def likes_summary(self, obj):
+        if not obj.pk:
+            return '-'
+        return (f'лайки: {obj.likes_count}; дизлайки: {obj.dislikes_count}; '
+                f'уникальных просмотров: {obj.unique_views.count()}')
 
     def image_preview(self, obj):
         if obj.img:
@@ -116,7 +130,8 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ['status', 'card_size', 'is_visible', 'show_on_homepage']
     search_fields = ['title', 'description', 'technologies', 'programming_languages']
     prepopulated_fields = {'slug': ('title',)}
-    list_editable = ['order', 'is_visible', 'card_size', 'show_on_homepage', 'homepage_order']
+    list_editable = ['order', 'is_visible', 'card_size', 'status', 'show_on_homepage', 'homepage_order']
+    actions = ['export_as_json', 'export_as_csv']
 
     fieldsets = (
         ('Основное', {
@@ -147,6 +162,48 @@ class ProjectAdmin(admin.ModelAdmin):
         techs = obj.get_technologies_list()[:3]
         return ', '.join(techs) + ('...' if len(obj.get_technologies_list()) > 3 else '')
     technologies_short.short_description = 'Технологии'
+
+    def _project_row(self, obj):
+        return {
+            'title': obj.title,
+            'slug': obj.slug,
+            'short_description': obj.short_description,
+            'description': obj.description,
+            'features': obj.features,
+            'icon': obj.icon,
+            'card_size': obj.get_card_size_display(),
+            'programming_languages': obj.programming_languages,
+            'technologies': obj.technologies,
+            'github_url': obj.github_url,
+            'demo_url': obj.demo_url,
+            'status': obj.status.name if obj.status else '',
+            'users_count': obj.users_count,
+            'is_visible': obj.is_visible,
+            'order': obj.order,
+            'show_on_homepage': obj.show_on_homepage,
+            'homepage_order': obj.homepage_order,
+        }
+
+    def export_as_json(self, request, queryset):
+        rows = [self._project_row(obj) for obj in queryset]
+        response = HttpResponse(
+            json.dumps(rows, ensure_ascii=False, indent=2),
+            content_type='application/json; charset=utf-8',
+        )
+        response['Content-Disposition'] = 'attachment; filename="projects_export.json"'
+        return response
+    export_as_json.short_description = 'Выгрузить выбранные проекты в JSON'
+
+    def export_as_csv(self, request, queryset):
+        response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+        response['Content-Disposition'] = 'attachment; filename="projects_export.csv"'
+        fieldnames = list(self._project_row(queryset.first()).keys()) if queryset.exists() else []
+        writer = csv.DictWriter(response, fieldnames=fieldnames)
+        writer.writeheader()
+        for obj in queryset:
+            writer.writerow(self._project_row(obj))
+        return response
+    export_as_csv.short_description = 'Выгрузить выбранные проекты в CSV'
 
 
 @admin.register(Skill)
@@ -240,6 +297,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         }),
         ('Файлы', {
             'fields': ('resume_file',)
+        }),
+        ('Главная — карточка справа', {
+            'fields': ('open_to_work', 'work_format')
         }),
         ('Аналитика', {
             'fields': ('yandex_metrika_id', 'google_analytics_id'),

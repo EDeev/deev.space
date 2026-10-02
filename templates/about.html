@@ -60,11 +60,11 @@
             </h3>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <span class="stat-value">3+</span>
+                    <span class="stat-value">5+</span>
                     <span class="stat-label">Года опыта</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">18</span>
+                    <span class="stat-value">{{ projects_count }}</span>
                     <span class="stat-label">Программных проектов</span>
                 </div>
                 <div class="stat-item">
@@ -76,8 +76,20 @@
                     <span class="stat-label">Команды разработки</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-value">20+</span>
+                    <span class="stat-value">{{ skills_count_rounded }}+</span>
                     <span class="stat-label">Технологический стек</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">{{ blog_views_display }}</span>
+                    <span class="stat-label">Просмотров блога</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">42</span>
+                    <span class="stat-label">MCP-инструмента</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">5</span>
+                    <span class="stat-label">Серверов</span>
                 </div>
             </div>
         </div>
@@ -183,21 +195,7 @@
                 <i class="fas fa-laptop-code"></i>
                 Технические навыки
             </h3>
-            <div class="skills-full-grid">
-                {% for category_name, category_skills in skills_by_category.items %}
-                <div class="skill-category-card">
-                    <h4 class="skill-category-title">{{ category_name }}</h4>
-                    <div class="skill-tags">
-                        {% for skill in category_skills %}
-                        <span class="skill-tag">
-                            <i class="{{ skill.icon|default:'fas fa-code' }}"></i>
-                            {{ skill.name }}
-                        </span>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            {% include 'includes/skills_rows.html' %}
         </div>
         
         <!-- Soft Skills & Interests -->
@@ -213,7 +211,7 @@
                 </div>
                 <div class="soft-skill-item">
                     <i class="fas fa-user-tie"></i>
-                    <span>Опыт управления командой разработки</span>
+                    <span>Руководство группами разработки и code review</span>
                 </div>
                 <div class="soft-skill-item">
                     <i class="fas fa-book-reader"></i>
@@ -251,7 +249,7 @@
                 </div>
                 <div class="interest-item">
                     <i class="fas fa-robot"></i>
-                    <span>Обучение нейросетей и ML</span>
+                    <span>LLM-агенты и MCP</span>
                 </div>
                 <div class="interest-item">
                     <i class="fas fa-cogs"></i>

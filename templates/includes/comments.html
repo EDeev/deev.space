@@ -25,7 +25,7 @@
                 class="vote-btn like"
                 id="comment-{{ comment.id }}-like-btn"
                 onclick="toggleCommentLike({{ comment.id }}, true)"
-                {% if not user.is_authenticated %}disabled{% endif %}>
+                >
             <i class="far fa-thumbs-up"></i>
             <span id="comment-{{ comment.id }}-likes">{{ comment.likes_count }}</span>
         </button>
@@ -34,7 +34,7 @@
                 class="vote-btn dislike"
                 id="comment-{{ comment.id }}-dislike-btn"
                 onclick="toggleCommentLike({{ comment.id }}, false)"
-                {% if not user.is_authenticated %}disabled{% endif %}>
+                >
             <i class="far fa-thumbs-down"></i>
             <span id="comment-{{ comment.id }}-dislikes">{{ comment.dislikes_count }}</span>
         </button>

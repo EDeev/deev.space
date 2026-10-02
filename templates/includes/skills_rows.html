@@ -1,0 +1,26 @@
+{% load static %}
+<div class="skills-rows">
+    {% for category_name, category_skills in skills_by_category.items %}
+    <div class="skills-row">
+        <span class="skills-row-title">{{ category_name }}</span>
+        <div class="skills-row-tags">
+            {% for skill in category_skills %}
+            <span class="skill-tag">
+                {% if skill.icon_svg %}
+                    {% if '<svg' in skill.icon_svg %}
+                    <span class="skill-icon-svg">{{ skill.icon_svg|safe }}</span>
+                    {% else %}
+                    <svg class="skill-icon-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="{{ skill.icon_svg }}"/></svg>
+                    {% endif %}
+                {% else %}
+                    <i class="{{ skill.icon|default:'fas fa-code' }}"></i>
+                {% endif %}
+                {{ skill.name }}
+            </span>
+            {% endfor %}
+            <button type="button" class="skills-more-btn" hidden></button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<script src="{% static 'js/skills.js' %}" defer></script>

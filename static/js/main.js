@@ -278,8 +278,9 @@
             });
 
             if (!response.ok) {
-                if (response.status === 403) {
-                    showNotification('Войдите, чтобы оценить статью', 'warning');
+                if (response.status === 429 || response.status === 403) {
+                    const err = await response.json().catch(() => ({}));
+                    showNotification(err.error || 'Не удалось оценить, обновите страницу', 'warning');
                     return;
                 }
                 throw new Error('Network response was not ok');
@@ -309,8 +310,9 @@
             });
 
             if (!response.ok) {
-                if (response.status === 403) {
-                    showNotification('Войдите, чтобы оценить комментарий', 'warning');
+                if (response.status === 429 || response.status === 403) {
+                    const err = await response.json().catch(() => ({}));
+                    showNotification(err.error || 'Не удалось оценить, обновите страницу', 'warning');
                     return;
                 }
                 throw new Error('Network response was not ok');

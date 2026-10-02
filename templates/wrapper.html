@@ -144,37 +144,37 @@
             <ul class="nav-menu" id="navMenu" role="menubar">
                 <li role="none">
                     <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'index' %}active{% endif %}" role="menuitem">
-                        <i class="fas fa-home"></i>
+                        <!--<i class="fas fa-home"></i>-->
                         <span>Главная</span>
                     </a>
                 </li>
                 <li role="none">
                     <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" role="menuitem">
-                        <i class="fas fa-user"></i>
+                        <!--<i class="fas fa-user"></i>-->
                         <span>Обо мне</span>
                     </a>
                 </li>
                 <li role="none">
                     <a href="{% url 'projects' %}" class="nav-link {% if request.resolver_match.url_name == 'projects' %}active{% endif %}" role="menuitem">
-                        <i class="fas fa-rocket"></i>
+                        <!--<i class="fas fa-rocket"></i>-->
                         <span>Проекты</span>
                     </a>
                 </li>
                 <li role="none">
                     <a href="{% url 'blog' %}" class="nav-link {% if 'blog' in request.resolver_match.url_name or request.resolver_match.url_name == 'article_detail' %}active{% endif %}" role="menuitem">
-                        <i class="fas fa-pen-fancy"></i>
+                        <!--<i class="fas fa-pen-fancy"></i>-->
                         <span>Блог</span>
                     </a>
                 </li>
                 <li role="none">
                     <a href="{% url 'achievements' %}" class="nav-link {% if request.resolver_match.url_name == 'achievements' %}active{% endif %}" role="menuitem">
-                        <i class="fas fa-trophy"></i>
+                        <!--<i class="fas fa-trophy"></i>-->
                         <span>Достижения</span>
                     </a>
                 </li>
                 <li role="none">
                     <a href="{% url 'contacts' %}" class="nav-link {% if request.resolver_match.url_name == 'contacts' %}active{% endif %}" role="menuitem">
-                        <i class="fas fa-envelope"></i>
+                        <!--<i class="fas fa-envelope"></i>-->
                         <span>Контакты</span>
                     </a>
                 </li>

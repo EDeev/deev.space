@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /backups/
+Disallow: /dspace/
+Disallow: /logs/
+Disallow: /main/
+Disallow: /media/
+Disallow: /static/
+Disallow: /staticfiles/
+Disallow: /templates/
+Disallow: /venv/
+
+Sitemap: https://deev.space/sitemap.xml

@@ -44,71 +44,36 @@
             </div>
         </div>
 
-        <!-- Quick Info Cards -->
-        <div class="bento-quick" data-aos="fade-up" data-aos-delay="100">
-            <div class="quick-card">
-                <div class="quick-icon">
+        <!-- Quick Info: карточка-паспорт -->
+        <div class="bento-quick bento-passport" data-aos="fade-up" data-aos-delay="100">
+            {% if site_settings.open_to_work %}
+            <span class="passport-status">Открыт к предложениям</span>
+            {% endif %}
+            <div class="passport-rows">
+                <div class="passport-row">
                     <i class="fas fa-map-marker-alt"></i>
+                    <div><span class="passport-label">Локация</span><span class="passport-value">{{ site_settings.owner_city|default:"Москва" }}, Россия</span></div>
                 </div>
-                <div class="quick-content">
-                    <h4>Локация</h4>
-                    <p>{{ site_settings.owner_city|default:"Москва" }}, Россия</p>
-                </div>
-            </div>
-
-            <div class="quick-card">
-                <div class="quick-icon">
+                <div class="passport-row">
                     <i class="fas fa-briefcase"></i>
+                    <div><span class="passport-label">Опыт</span><span class="passport-value">5+ лет</span></div>
                 </div>
-                <div class="quick-content">
-                    <h4>Опыт</h4>
-                    <p>3+ года</p>
-                </div>
-            </div>
-
-            <div class="quick-card">
-                <div class="quick-icon">
+                <div class="passport-row">
                     <i class="fas fa-graduation-cap"></i>
+                    <div><span class="passport-label">Образование</span><span class="passport-value">Программная инженерия</span></div>
                 </div>
-                <div class="quick-content">
-                    <h4>Образование</h4>
-                    <p>МосПолитех</p>
+                {% if site_settings.work_format %}
+                <div class="passport-row">
+                    <i class="fas fa-laptop-house"></i>
+                    <div><span class="passport-label">Формат работы</span><span class="passport-value">{{ site_settings.work_format }}</span></div>
                 </div>
+                {% endif %}
             </div>
-
-            <div class="quick-card social-quick-card">
-                <div class="quick-icon">
-                    <i class="fas fa-share-alt"></i>
-                </div>
-                <div class="quick-content">
-                    <h4>Социальные сети</h4>
-                    <div class="social-icons-inline">
-                        {% if site_settings.telegram_url %}
-                        <a href="{{ site_settings.telegram_url }}" target="_blank" rel="noopener noreferrer"
-                           class="social-icon-link" aria-label="Telegram">
-                            <i class="fab fa-telegram"></i>
-                        </a>
-                        {% endif %}
-                        {% if site_settings.github_url %}
-                        <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener noreferrer"
-                           class="social-icon-link" aria-label="GitHub">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        {% endif %}
-                        {% if site_settings.vk_url %}
-                        <a href="{{ site_settings.vk_url }}" target="_blank" rel="noopener noreferrer"
-                           class="social-icon-link" aria-label="VKontakte">
-                            <i class="fab fa-vk"></i>
-                        </a>
-                        {% endif %}
-                        {% if site_settings.linkedin_url %}
-                        <a href="{{ site_settings.linkedin_url }}" target="_blank" rel="noopener noreferrer"
-                           class="social-icon-link" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
+            <div class="passport-social">
+                {% if site_settings.telegram_url %}<a href="{{ site_settings.telegram_url }}" class="is-telegram" target="_blank" rel="noopener noreferrer"><i class="fab fa-telegram"></i>Telegram</a>{% endif %}
+                {% if site_settings.github_url %}<a href="{{ site_settings.github_url }}" class="is-github" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i>GitHub</a>{% endif %}
+                {% if site_settings.linkedin_url %}<a href="{{ site_settings.linkedin_url }}" class="is-linkedin" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i>LinkedIn</a>{% endif %}
+                {% if site_settings.vk_url %}<a href="{{ site_settings.vk_url }}" class="is-vk" target="_blank" rel="noopener noreferrer"><i class="fab fa-vk"></i>VK</a>{% endif %}
             </div>
         </div>
 
@@ -121,21 +86,7 @@
                 <h3>Технологический стек</h3>
             </div>
 
-            <div class="skills-categories">
-                {% for category_name, category_skills in skills_by_category.items %}
-                <div class="skill-category">
-                    <div class="skill-category-title">{{ category_name }}</div>
-                    <div class="skill-tags">
-                        {% for skill in category_skills %}
-                        <span class="skill-tag">
-                            <i class="{{ skill.icon|default:'fas fa-code' }}"></i>
-                            {{ skill.name }}
-                        </span>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+            {% include 'includes/skills_rows.html' %}
         </div>
     </div>
     
@@ -171,7 +122,7 @@
             <div class="project-card github-cta regular" data-aos="fade-up" data-aos-delay="500">
                 <div class="github-cta-content">
                     <i class="fab fa-github"></i>
-                    <p>Ещё 12 проектов на GitHub</p>
+                    <p>Ещё {{ more_projects_count }} {{ more_projects_count|ru_plural:"проект,проекта,проектов" }} на GitHub</p>
                     <a href="{{ site_settings.github_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">
                         Перейти
                     </a>

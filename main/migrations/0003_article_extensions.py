@@ -8,6 +8,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # ProjectStatus model
         migrations.CreateModel(
             name='ProjectStatus',
             fields=[
@@ -27,6 +28,7 @@ class Migration(migrations.Migration):
             },
         ),
 
+        # ArticleImage model
         migrations.CreateModel(
             name='ArticleImage',
             fields=[
@@ -48,6 +50,7 @@ class Migration(migrations.Migration):
             },
         ),
 
+        # ArticleFile model
         migrations.CreateModel(
             name='ArticleFile',
             fields=[
@@ -70,6 +73,7 @@ class Migration(migrations.Migration):
             },
         ),
 
+        # ArticleLink model
         migrations.CreateModel(
             name='ArticleLink',
             fields=[
@@ -92,6 +96,8 @@ class Migration(migrations.Migration):
                 'ordering': ['order'],
             },
         ),
+
+        # Article new fields
         migrations.AddField(
             model_name='article',
             name='comments_enabled',
@@ -115,6 +121,8 @@ class Migration(migrations.Migration):
                                       help_text='Если включено, изображения/файлы/ссылки, добавленные через редактор в текст, не будут отображаться в общих блоках',
                                       verbose_name='Не дублировать медиа из редактора в блоках'),
         ),
+
+        # Project new fields
         migrations.AddField(
             model_name='project',
             name='show_on_homepage',
@@ -131,6 +139,8 @@ class Migration(migrations.Migration):
             field=models.CharField(blank=True, help_text='Например: Python, JavaScript', max_length=200,
                                    verbose_name='Языки программирования (через запятую)'),
         ),
+
+        # Change Project.status to ForeignKey
         migrations.RemoveField(
             model_name='project',
             name='status',

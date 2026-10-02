@@ -728,3 +728,30 @@
         margin-top: var(--space-lg);
     }
 }
+
+/* Отступы между секциями главной (2026-10) */
+.section {
+    padding: var(--space-xl) 0;
+}
+
+.section-divider {
+    margin: var(--space-lg) 0;
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: var(--space-lg) 0;
+    }
+
+    .section-header {
+        margin-bottom: var(--space-lg);
+    }
+
+    .section-divider {
+        margin: var(--space-md) 0;
+    }
+
+    .cta-section {
+        margin: var(--space-xl) 0;
+    }
+}

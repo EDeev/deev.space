@@ -139,3 +139,17 @@ def reading_time(text, words_per_minute=200):
     # Расчет минут с округлением вверх
     minutes = math.ceil(word_count / words_per_minute)
     return max(1, minutes)  # минимум 1 минута
+
+@register.filter
+def ru_plural(value, forms):
+    """Склонение по числу: {{ n|ru_plural:"проект,проекта,проектов" }}."""
+    one, few, many = [f.strip() for f in forms.split(',')]
+    n = abs(int(value)) % 100
+    if 11 <= n <= 14:
+        return many
+    n %= 10
+    if n == 1:
+        return one
+    if 2 <= n <= 4:
+        return few
+    return many

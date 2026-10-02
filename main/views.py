@@ -10,11 +10,18 @@ from django.conf import settings
 from django.db.models import Q, Count
 from django.views.decorators.http import require_POST, require_GET
 from django.utils import timezone
+from django.utils.html import escape
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.db.models import Sum
+from datetime import timedelta
+from .middleware import client_ip_hash, is_bot
 import json
 import logging
+import requests
 
 from .models import (
-    Article, Project, ProjectStatus, Skill, Comment, ArticleLike, CommentLike,
+    Article, Project, ProjectStatus, Skill, Comment, ArticleLike, CommentLike, ArticleView,
     ContactMessage, Experience, Education, Category, SiteSettings
 )
 from .forms import RegisterForm, LoginForm, CommentForm, ContactForm
@@ -25,6 +32,46 @@ logger = logging.getLogger(__name__)
 def get_site_settings():
     """Получение настроек сайта."""
     return SiteSettings.load()
+
+
+def notify_alertbot_contact_message(message):
+    """Уведомление владельца в Telegram (через AlertBot) о новом сообщении с формы обратной связи.
+
+    Не должно ронять отправку формы — все ошибки логируются на уровне вызывающего кода.
+    """
+    bot_token = settings.ALERTBOT_TOKEN
+    chat_id = settings.ALERTBOT_CHAT_ID
+
+    if not bot_token or not chat_id:
+        logger.warning('ALERTBOT_TOKEN/ALERTBOT_CHAT_ID не настроены — уведомление о сообщении с формы не отправлено')
+        return
+
+    text = (
+        f'<b>Новое сообщение с сайта deev.space</b>\n\n'
+        f'<b>Имя:</b> {escape(message.name)}\n'
+        f'<b>Email:</b> {escape(message.email)}\n'
+        f'<b>Тема:</b> {escape(message.subject)}\n\n'
+        f'{escape(message.message)}'
+    )
+
+    url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
+    response = requests.post(url, data={
+        'chat_id': chat_id,
+        'text': text,
+        'parse_mode': 'HTML',
+    }, timeout=10)
+    response.raise_for_status()
+
+
+
+def get_skills_by_category():
+    """Навыки по категориям в порядке Skill.CATEGORY_CHOICES."""
+    rank = {key: i for i, (key, _) in enumerate(Skill.CATEGORY_CHOICES)}
+    skills = sorted(Skill.objects.all(), key=lambda s: (rank.get(s.category, len(rank)), s.order, s.name))
+    categories = {}
+    for skill in skills:
+        categories.setdefault(skill.get_category_display(), []).append(skill)
+    return categories
 
 
 class IndexView(TemplateView):
@@ -47,24 +94,20 @@ class IndexView(TemplateView):
             is_visible=True,
             show_on_homepage=True
         ).order_by('homepage_order', 'order', '-date')[:6]
+        context['more_projects_count'] = max(
+            Project.objects.filter(is_visible=True).count() - len(context['featured_projects']), 0
+        )
 
         context['experiences'] = Experience.objects.all()[:2]
 
         context['page_title'] = f'{site_settings.owner_name} — {site_settings.owner_title}'
         context[
-            'page_description'] = site_settings.site_description or f'Персональный сайт {site_settings.owner_title.lower()} {site_settings.owner_name}'
+            'page_description'] = site_settings.site_description or f'Персональный сайт {site_settings.owner_title} {site_settings.owner_name}'
 
         return context
 
     def _get_skills_by_category(self):
-        skills = Skill.objects.all()
-        categories = {}
-        for skill in skills:
-            cat_display = skill.get_category_display()
-            if cat_display not in categories:
-                categories[cat_display] = []
-            categories[cat_display].append(skill)
-        return categories
+        return get_skills_by_category()
 
 
 class AboutView(TemplateView):
@@ -80,22 +123,23 @@ class AboutView(TemplateView):
         context['educations'] = Education.objects.all()
         context['skills'] = Skill.objects.all()
         context['skills_by_category'] = self._get_skills_by_category()
+        context['projects_count'] = Project.objects.filter(is_visible=True).count()
+        context['skills_count_rounded'] = Skill.objects.count() // 10 * 10
+        blog_views = Article.objects.filter(
+            is_published=True, is_achievement=False
+        ).aggregate(total=Sum('views'))['total'] or 0
+        context['blog_views_display'] = (
+            f'{blog_views // 100 / 10:g}k+' if blog_views >= 1000 else str(blog_views)
+        )
 
         context['page_title'] = f'Обо мне — {site_settings.owner_name}'
         context[
-            'page_description'] = f'Профессиональный путь, образование и навыки {site_settings.owner_title.lower()} {site_settings.owner_name}'
+            'page_description'] = f'Профессиональный путь, образование и навыки {site_settings.owner_title} {site_settings.owner_name}'
 
         return context
 
     def _get_skills_by_category(self):
-        skills = Skill.objects.all()
-        categories = {}
-        for skill in skills:
-            cat_display = skill.get_category_display()
-            if cat_display not in categories:
-                categories[cat_display] = []
-            categories[cat_display].append(skill)
-        return categories
+        return get_skills_by_category()
 
 
 class ProjectsView(ListView):
@@ -228,6 +272,7 @@ class BlogView(ListView):
         return context
 
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class ArticleDetailView(DetailView):
     """Страница отдельной статьи."""
     model = Article
@@ -242,6 +287,9 @@ class ArticleDetailView(DetailView):
         obj = super().get_object(queryset)
         obj.views += 1
         obj.save(update_fields=['views'])
+        visitor_id = getattr(self.request, 'visitor_id', '')
+        if visitor_id and not is_bot(self.request):
+            ArticleView.objects.get_or_create(article=obj, visitor_id=visitor_id)
         return obj
 
     def get_context_data(self, **kwargs):
@@ -266,6 +314,10 @@ class ArticleDetailView(DetailView):
                 article=article, user=self.request.user
             ).first()
             context['user_like'] = like
+        elif getattr(self.request, 'visitor_id', ''):
+            context['user_like'] = ArticleLike.objects.filter(
+                article=article, user__isnull=True, visitor_id=self.request.visitor_id
+            ).first()
 
         context['related_articles'] = Article.objects.filter(
             is_published=True, is_achievement=False, category=article.category
@@ -350,6 +402,11 @@ class ContactsView(TemplateView):
                 )
             except Exception as e:
                 logger.error(f'Ошибка отправки email: {e}')
+
+            try:
+                notify_alertbot_contact_message(message)
+            except Exception as e:
+                logger.error(f'Ошибка отправки уведомления в AlertBot: {e}')
 
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'success': True, 'message': 'Сообщение успешно отправлено!'})
@@ -460,34 +517,54 @@ def add_comment(request, article_id):
     return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 
-@login_required
+VOTES_PER_IP_PER_DAY = 2
+
+
+def _toggle_vote(request, model, field, obj):
+    """Общая логика лайка/дизлайка: по аккаунту для вошедших, по ID посетителя для остальных."""
+    try:
+        is_like = bool(json.loads(request.body).get('is_like', True))
+    except (json.JSONDecodeError, AttributeError):
+        return None, JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+
+    qs = model.objects.filter(**{field: obj})
+    if request.user.is_authenticated:
+        mine = qs.filter(user=request.user)
+    else:
+        mine = qs.filter(user__isnull=True, visitor_id=request.visitor_id)
+    vote = mine.first()
+
+    if vote:
+        if vote.is_like == is_like:
+            vote.delete()
+            return None, None
+        vote.is_like = is_like
+        vote.save(update_fields=['is_like'])
+        return is_like, None
+
+    ip_hash = client_ip_hash(request)
+    if not request.user.is_authenticated and ip_hash:
+        recent = qs.filter(user__isnull=True, ip_hash=ip_hash,
+                           created_at__gte=timezone.now() - timedelta(days=1)).count()
+        if recent >= VOTES_PER_IP_PER_DAY:
+            return None, JsonResponse(
+                {'success': False, 'error': 'Слишком много оценок с этого устройства, попробуйте позже'}, status=429
+            )
+    model.objects.create(
+        **{field: obj}, is_like=is_like, ip_hash=ip_hash,
+        user=request.user if request.user.is_authenticated else None,
+        visitor_id='' if request.user.is_authenticated else request.visitor_id,
+    )
+    return is_like, None
+
+
 @require_POST
 def toggle_article_like(request, article_id):
-    """Лайк/дизлайк статьи."""
+    """Лайк/дизлайк статьи (в том числе достижения), без регистрации."""
     article = get_object_or_404(Article, id=article_id, is_published=True)
-
-    try:
-        data = json.loads(request.body)
-        is_like = data.get('is_like', True)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
-
-    like, created = ArticleLike.objects.get_or_create(
-        article=article, user=request.user,
-        defaults={'is_like': is_like}
-    )
-
-    user_vote = None
-    if not created:
-        if like.is_like == is_like:
-            like.delete()
-        else:
-            like.is_like = is_like
-            like.save()
-            user_vote = is_like
-    else:
-        user_vote = is_like
-
+    user_vote, error = _toggle_vote(request, ArticleLike, 'article', article)
+    if error:
+        return error
     return JsonResponse({
         'success': True,
         'likes': article.likes_count,
@@ -496,34 +573,13 @@ def toggle_article_like(request, article_id):
     })
 
 
-@login_required
 @require_POST
 def toggle_comment_like(request, comment_id):
-    """Лайк/дизлайк комментария."""
+    """Лайк/дизлайк комментария, без регистрации."""
     comment = get_object_or_404(Comment, id=comment_id, is_approved=True)
-
-    try:
-        data = json.loads(request.body)
-        is_like = data.get('is_like', True)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
-
-    like, created = CommentLike.objects.get_or_create(
-        comment=comment, user=request.user,
-        defaults={'is_like': is_like}
-    )
-
-    user_vote = None
-    if not created:
-        if like.is_like == is_like:
-            like.delete()
-        else:
-            like.is_like = is_like
-            like.save()
-            user_vote = is_like
-    else:
-        user_vote = is_like
-
+    user_vote, error = _toggle_vote(request, CommentLike, 'comment', comment)
+    if error:
+        return error
     return JsonResponse({
         'success': True,
         'likes': comment.likes_count,

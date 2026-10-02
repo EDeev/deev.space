@@ -21,6 +21,7 @@ def publish_to_social_media(sender, instance, created, **kwargs):
     if instance.is_achievement:
         return
 
+    '''
     # Telegram
     if settings.TELEGRAM_BOT_TOKEN and settings.TELEGRAM_CHANNEL_ID:
         try:
@@ -36,6 +37,13 @@ def publish_to_social_media(sender, instance, created, **kwargs):
             logger.info(f'Статья "{instance.title}" опубликована в VK')
         except Exception as e:
             logger.error(f'Ошибка публикации в VK: {e}')
+    '''
+
+    try:
+        ping_search_engines(instance)
+        logger.info(f'Поисковые системы уведомлены о статье "{instance.title}"')
+    except Exception as e:
+        logger.error(f'Ошибка уведомления поисковых систем: {e}')
 
 
 def publish_to_telegram(article):
@@ -107,3 +115,22 @@ def escape_markdown(text):
     for char in escape_chars:
         text = text.replace(char, f'\\{char}')
     return text
+
+
+def ping_search_engines(article):
+    """Уведомление поисковых систем о новой статье."""
+    article_url = f"https://deev.space{article.get_absolute_url()}"
+    
+    # Google
+    try:
+        google_ping_url = f"https://www.google.com/ping?sitemap=https://deev.space/sitemap.xml"
+        requests.get(google_ping_url, timeout=5)
+    except Exception as e:
+        logger.error(f'Ошибка ping Google: {e}')
+    
+    # Яндекс
+    try:
+        yandex_ping_url = f"https://webmaster.yandex.ru/ping?sitemap=https://deev.space/sitemap.xml"
+        requests.get(yandex_ping_url, timeout=5)
+    except Exception as e:
+        logger.error(f'Ошибка ping Яндекс: {e}')

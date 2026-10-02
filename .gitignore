@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+logs/
+
+# Окружение и локальные файлы
+.env
+*.bak*
+.DS_Store
+.idea/
+.vscode/
+
+# Тесты и линтеры
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/

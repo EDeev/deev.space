@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,11 +8,18 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '*****')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['deev.space', 'deev.su', 'www.deev.space', 'www.deev.su', 'localhost', '127.0.0.1']
+if not DEBUG and SECRET_KEY.startswith('django-insecure'):
+    raise ImproperlyConfigured('Задайте DJANGO_SECRET_KEY для запуска с DJANGO_DEBUG=False')
+
+ALLOWED_HOSTS = os.environ.get(
+    'DJANGO_ALLOWED_HOSTS',
+    'deev.space,www.deev.space,deev.su,www.deev.su,xdeev.ru,www.xdeev.ru,localhost,127.0.0.1',
+).split(',')
+CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if o]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -30,6 +38,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'main.middleware.VisitorMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -58,7 +67,7 @@ WSGI_APPLICATION = 'dspace.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.environ.get('DJANGO_DB_PATH', BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -98,12 +107,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Yandex SmartCaptcha Settings
-SMARTCAPTCHA_CLIENT_KEY = os.environ.get('SMARTCAPTCHA_CLIENT_KEY', '*****')
-SMARTCAPTCHA_SERVER_KEY = os.environ.get('SMARTCAPTCHA_SERVER_KEY', '*****')
+SMARTCAPTCHA_CLIENT_KEY = os.environ.get('SMARTCAPTCHA_CLIENT_KEY', '')
+SMARTCAPTCHA_SERVER_KEY = os.environ.get('SMARTCAPTCHA_SERVER_KEY', '')
+
 
 # Telegram Bot Settings
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHANNEL_ID = os.environ.get('TELEGRAM_CHANNEL_ID', '')
+
+# AlertBot (Telegram) — уведомления владельцу о новых сообщениях с формы обратной связи
+ALERTBOT_TOKEN = os.environ.get('ALERTBOT_TOKEN', '')
+ALERTBOT_CHAT_ID = os.environ.get('ALERTBOT_CHAT_ID', '')
 
 # VK API Settings
 VK_ACCESS_TOKEN = os.environ.get('VK_ACCESS_TOKEN', '')
@@ -116,8 +130,8 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'egor@deev.space')
-CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', 'egor@deev.space')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '')
+CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', '')
 
 # Site Settings
 SITE_NAME = 'deev.space'
@@ -133,8 +147,7 @@ CSRF_COOKIE_SECURE = not DEBUG
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'True') == 'True'
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
