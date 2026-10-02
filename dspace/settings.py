@@ -9,11 +9,12 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
+DEV_SECRET_KEY = 'django-insecure-dev-only-change-me'  # noqa: S105 — заглушка только для разработки
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', DEV_SECRET_KEY)
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-if not DEBUG and SECRET_KEY == 'django-insecure-dev-only-change-me':
+if not DEBUG and SECRET_KEY == DEV_SECRET_KEY:
     raise ImproperlyConfigured('Задайте DJANGO_SECRET_KEY для запуска с DJANGO_DEBUG=False')
 
 ALLOWED_HOSTS = os.environ.get(
