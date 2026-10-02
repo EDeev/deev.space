@@ -1,11 +1,11 @@
-from django import forms
-from django.contrib.auth.forms import AuthenticationForm
-from django.core.validators import RegexValidator
-from django.conf import settings
 import bleach
 import requests
+from django import forms
+from django.conf import settings
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.validators import RegexValidator
 
-from .models import CustomUser, Comment, ContactMessage
+from .models import Comment, ContactMessage, CustomUser
 
 
 class SmartCaptchaField(forms.CharField):

@@ -1,11 +1,29 @@
-from django.db import models
+import ipaddress
+import logging
+import socket
+from urllib.parse import urlparse
+
+import requests
+from bs4 import BeautifulSoup
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from unidecode import unidecode
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import urlparse
+
+logger = logging.getLogger(__name__)
+
+
+def is_public_http_url(url):
+    """Проверка, что ссылка ведёт на публичный http(s)-адрес, а не во внутреннюю сеть сервера."""
+    parsed = urlparse(url)
+    if parsed.scheme not in ('http', 'https') or not parsed.hostname:
+        return False
+    try:
+        infos = socket.getaddrinfo(parsed.hostname, parsed.port or 443)
+    except OSError:
+        return False
+    return all(ipaddress.ip_address(info[4][0]).is_global for info in infos)
 
 
 class CustomUser(AbstractUser):
@@ -235,6 +253,9 @@ class ArticleLink(models.Model):
 
     def fetch_preview(self):
         """Автоматическое получение метаданных ссылки."""
+        if not is_public_http_url(self.url):
+            logger.warning('Превью не загружено: адрес %s не публичный', self.url)
+            return
         try:
             headers = {'User-Agent': 'Mozilla/5.0 (compatible; ArticleBot/1.0)'}
             response = requests.get(self.url, headers=headers, timeout=10)
@@ -262,8 +283,8 @@ class ArticleLink(models.Model):
             if og_image:
                 self.preview_image = og_image.get('content', '')
 
-        except Exception:
-            pass
+        except (requests.RequestException, AttributeError, TypeError) as e:
+            logger.warning('Не удалось получить превью %s: %s', self.url, e)
 
     def save(self, *args, **kwargs):
         if not self.title:

@@ -3,14 +3,20 @@
 Использование: python manage.py populate_demo
 """
 
-from django.core.management.base import BaseCommand
+from datetime import date
+
 from django.contrib.auth import get_user_model
+from django.core.management.base import BaseCommand
+
 from main.models import (
-    SiteSettings, Skill, Project, Article, ArticleCategory,
-    Experience, Education, Achievement, Comment
+    Article,
+    ArticleCategory,
+    Education,
+    Experience,
+    Project,
+    SiteSettings,
+    Skill,
 )
-from datetime import date, timedelta
-import random
 
 User = get_user_model()
 

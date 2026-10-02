@@ -1,30 +1,38 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from django.views.generic import ListView, DetailView, TemplateView
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.core.paginator import Paginator
-from django.core.mail import send_mail
-from django.conf import settings
-from django.db.models import Q, Count
-from django.views.decorators.http import require_POST, require_GET
-from django.utils import timezone
-from django.utils.html import escape
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.db.models import Sum
-from datetime import timedelta
-from .middleware import client_ip_hash, is_bot
 import json
 import logging
-import requests
+from datetime import timedelta
 
+import requests
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.db.models import Count, Q, Sum
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.utils.html import escape
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_POST
+from django.views.generic import DetailView, ListView, TemplateView
+
+from .forms import CommentForm, ContactForm, LoginForm, RegisterForm
+from .middleware import client_ip_hash, is_bot
 from .models import (
-    Article, Project, ProjectStatus, Skill, Comment, ArticleLike, CommentLike, ArticleView,
-    ContactMessage, Experience, Education, Category, SiteSettings
+    Article,
+    ArticleLike,
+    ArticleView,
+    Category,
+    Comment,
+    CommentLike,
+    Education,
+    Experience,
+    Project,
+    SiteSettings,
+    Skill,
 )
-from .forms import RegisterForm, LoginForm, CommentForm, ContactForm
 
 logger = logging.getLogger(__name__)
 
@@ -398,10 +406,9 @@ class ContactsView(TemplateView):
                     message=f'От: {message.name} ({message.email})\n\nТема: {message.subject}\n\n{message.message}',
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=[settings.CONTACT_EMAIL],
-                    fail_silently=True,
                 )
-            except Exception as e:
-                logger.error(f'Ошибка отправки email: {e}')
+            except Exception:
+                logger.exception('Ошибка отправки email')
 
             try:
                 notify_alertbot_contact_message(message)

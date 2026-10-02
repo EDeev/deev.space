@@ -4,10 +4,24 @@ import json
 from django.contrib import admin
 from django.http import HttpResponse
 from django.utils.html import format_html
+
 from .models import (
-    CustomUser, Category, Article, ArticleImage, ArticleFile, ArticleLink,
-    Project, ProjectStatus, Skill, Comment, ArticleLike, CommentLike,
-    ContactMessage, Experience, Education, SiteSettings
+    Article,
+    ArticleFile,
+    ArticleImage,
+    ArticleLike,
+    ArticleLink,
+    Category,
+    Comment,
+    CommentLike,
+    ContactMessage,
+    CustomUser,
+    Education,
+    Experience,
+    Project,
+    ProjectStatus,
+    SiteSettings,
+    Skill,
 )
 
 

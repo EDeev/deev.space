@@ -1,8 +1,8 @@
-from django.core.management.base import BaseCommand
-from main.models import (
-    Skill, Experience, Education, Project, Category, SiteSettings, Article
-)
 from datetime import date
+
+from django.core.management.base import BaseCommand
+
+from main.models import Article, Category, Education, Experience, Project, SiteSettings, Skill
 
 
 class Command(BaseCommand):

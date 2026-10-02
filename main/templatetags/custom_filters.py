@@ -1,6 +1,7 @@
+import math
+
 from django import template
-from django.utils.safestring import mark_safe
-import re, math
+from django.utils.html import format_html
 
 register = template.Library()
 
@@ -113,8 +114,7 @@ def status_label(status):
 def render_tech_badge(tech_name):
     """Рендерит HTML для бейджа технологии."""
     icon_class = tech_icon(tech_name)
-    html = f'<span class="tech-badge"><i class="{icon_class}"></i> {tech_name}</span>'
-    return mark_safe(html)
+    return format_html('<span class="tech-badge"><i class="{}"></i> {}</span>', icon_class, tech_name)
 
 
 @register.filter

@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
@@ -34,6 +35,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,7 +104,9 @@ if not DEBUG:
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = Path(os.environ.get('DJANGO_MEDIA_ROOT', BASE_DIR / 'media'))
+# Отдавать media самим Django (для запуска в Docker без nginx); в бою media отдаёт nginx
+SERVE_MEDIA = os.environ.get('DJANGO_SERVE_MEDIA', 'False') == 'True'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -110,6 +114,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SMARTCAPTCHA_CLIENT_KEY = os.environ.get('SMARTCAPTCHA_CLIENT_KEY', '')
 SMARTCAPTCHA_SERVER_KEY = os.environ.get('SMARTCAPTCHA_SERVER_KEY', '')
 
+
+# Автопостинг новых статей в Telegram-канал и группу VK (выключен по умолчанию)
+SOCIAL_AUTOPOST = os.environ.get('SOCIAL_AUTOPOST', 'False') == 'True'
 
 # Telegram Bot Settings
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -126,7 +133,7 @@ VK_GROUP_ID = os.environ.get('VK_GROUP_ID', '')
 # Email Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.yandex.ru')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '465'))
 EMAIL_USE_SSL = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')

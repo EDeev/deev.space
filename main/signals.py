@@ -1,79 +1,72 @@
+import html
+import logging
+
+import requests
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
-import requests
-import logging
 
 from .models import Article
 
 logger = logging.getLogger(__name__)
 
+SITE_URL = 'https://deev.space'
+
 
 @receiver(post_save, sender=Article)
 def publish_to_social_media(sender, instance, created, **kwargs):
     """Автоматическая публикация новой статьи в социальные сети."""
-    if not created:
+    if not created or not instance.is_published or instance.is_achievement:
         return
 
-    if not instance.is_published:
-        return
+    if settings.SOCIAL_AUTOPOST:
+        if settings.TELEGRAM_BOT_TOKEN and settings.TELEGRAM_CHANNEL_ID:
+            try:
+                publish_to_telegram(instance)
+                logger.info('Статья "%s" опубликована в Telegram', instance.title)
+            except requests.RequestException:
+                logger.exception('Ошибка публикации в Telegram')
 
-    if instance.is_achievement:
-        return
+        if settings.VK_ACCESS_TOKEN and settings.VK_GROUP_ID:
+            try:
+                publish_to_vk(instance)
+                logger.info('Статья "%s" опубликована в VK', instance.title)
+            except requests.RequestException:
+                logger.exception('Ошибка публикации в VK')
 
-    '''
-    # Telegram
-    if settings.TELEGRAM_BOT_TOKEN and settings.TELEGRAM_CHANNEL_ID:
-        try:
-            publish_to_telegram(instance)
-            logger.info(f'Статья "{instance.title}" опубликована в Telegram')
-        except Exception as e:
-            logger.error(f'Ошибка публикации в Telegram: {e}')
+    ping_search_engines()
 
-    # VK
-    if settings.VK_ACCESS_TOKEN and settings.VK_GROUP_ID:
-        try:
-            publish_to_vk(instance)
-            logger.info(f'Статья "{instance.title}" опубликована в VK')
-        except Exception as e:
-            logger.error(f'Ошибка публикации в VK: {e}')
-    '''
 
-    try:
-        ping_search_engines(instance)
-        logger.info(f'Поисковые системы уведомлены о статье "{instance.title}"')
-    except Exception as e:
-        logger.error(f'Ошибка уведомления поисковых систем: {e}')
+def build_telegram_text(article):
+    """Текст поста для Telegram в режиме parse_mode=HTML."""
+    article_url = f'{SITE_URL}{article.get_absolute_url()}'
+    text = f'📝 <b>{html.escape(article.title)}</b>\n\n'
+    if article.excerpt:
+        excerpt = article.excerpt[:200] + '...' if len(article.excerpt) > 200 else article.excerpt
+        text += f'{html.escape(excerpt)}\n\n'
+    text += f'<a href="{html.escape(article_url, quote=True)}">Читать полностью</a>'
+    return text
 
 
 def publish_to_telegram(article):
     """Публикация статьи в Telegram-канал."""
-    bot_token = settings.TELEGRAM_BOT_TOKEN
-    channel_id = settings.TELEGRAM_CHANNEL_ID
-
-    article_url = f"https://deev.space{article.get_absolute_url()}"
-
-    text = f"📝 *{escape_markdown(article.title)}*\n\n"
-    if article.excerpt:
-        excerpt = article.excerpt[:200] + '...' if len(article.excerpt) > 200 else article.excerpt
-        text += f"{escape_markdown(excerpt)}\n\n"
-    text += f"[Читать полностью]({article_url})"
+    api = f'https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}'
+    text = build_telegram_text(article)
 
     if article.img:
-        url = f"https://api.telegram.org/bot{bot_token}/sendPhoto"
+        url = f'{api}/sendPhoto'
         data = {
-            'chat_id': channel_id,
-            'photo': f"https://deev.space{article.img.url}",
+            'chat_id': settings.TELEGRAM_CHANNEL_ID,
+            'photo': f'{SITE_URL}{article.img.url}',
             'caption': text,
-            'parse_mode': 'Markdown'
+            'parse_mode': 'HTML',
         }
     else:
-        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        url = f'{api}/sendMessage'
         data = {
-            'chat_id': channel_id,
+            'chat_id': settings.TELEGRAM_CHANNEL_ID,
             'text': text,
-            'parse_mode': 'Markdown',
-            'disable_web_page_preview': False
+            'parse_mode': 'HTML',
         }
 
     response = requests.post(url, data=data, timeout=10)
@@ -82,55 +75,31 @@ def publish_to_telegram(article):
 
 def publish_to_vk(article):
     """Публикация статьи в группу VKontakte."""
-    access_token = settings.VK_ACCESS_TOKEN
-    group_id = settings.VK_GROUP_ID
+    article_url = f'{SITE_URL}{article.get_absolute_url()}'
 
-    article_url = f"https://deev.space{article.get_absolute_url()}"
-
-    message = f"📝 {article.title}\n\n"
+    message = f'📝 {article.title}\n\n'
     if article.excerpt:
         excerpt = article.excerpt[:300] + '...' if len(article.excerpt) > 300 else article.excerpt
-        message += f"{excerpt}\n\n"
-    message += f"🔗 Читать: {article_url}"
+        message += f'{excerpt}\n\n'
+    message += f'🔗 Читать: {article_url}'
 
-    url = "https://api.vk.com/method/wall.post"
     params = {
-        'owner_id': f'-{group_id}',
+        'owner_id': f'-{settings.VK_GROUP_ID}',
         'message': message,
         'from_group': 1,
-        'access_token': access_token,
-        'v': '5.131'
+        'access_token': settings.VK_ACCESS_TOKEN,
+        'v': '5.131',
     }
-
     if article.img:
-        params['attachments'] = f"https://deev.space{article.img.url}"
+        params['attachments'] = f'{SITE_URL}{article.img.url}'
 
-    response = requests.post(url, params=params, timeout=10)
+    response = requests.post('https://api.vk.com/method/wall.post', params=params, timeout=10)
     response.raise_for_status()
 
 
-def escape_markdown(text):
-    """Экранирование специальных символов Markdown."""
-    escape_chars = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-    for char in escape_chars:
-        text = text.replace(char, f'\\{char}')
-    return text
-
-
-def ping_search_engines(article):
-    """Уведомление поисковых систем о новой статье."""
-    article_url = f"https://deev.space{article.get_absolute_url()}"
-    
-    # Google
+def ping_search_engines():
+    """Уведомление Яндекса об обновлении sitemap (Google ping-эндпоинт отключил в 2023 году)."""
     try:
-        google_ping_url = f"https://www.google.com/ping?sitemap=https://deev.space/sitemap.xml"
-        requests.get(google_ping_url, timeout=5)
-    except Exception as e:
-        logger.error(f'Ошибка ping Google: {e}')
-    
-    # Яндекс
-    try:
-        yandex_ping_url = f"https://webmaster.yandex.ru/ping?sitemap=https://deev.space/sitemap.xml"
-        requests.get(yandex_ping_url, timeout=5)
-    except Exception as e:
-        logger.error(f'Ошибка ping Яндекс: {e}')
+        requests.get(f'https://webmaster.yandex.ru/ping?sitemap={SITE_URL}/sitemap.xml', timeout=5)
+    except requests.RequestException as e:
+        logger.warning('Ошибка ping Яндекса: %s', e)
