@@ -13,7 +13,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-only-chang
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-if not DEBUG and SECRET_KEY.startswith('django-insecure'):
+if not DEBUG and SECRET_KEY == 'django-insecure-dev-only-change-me':
     raise ImproperlyConfigured('Задайте DJANGO_SECRET_KEY для запуска с DJANGO_DEBUG=False')
 
 ALLOWED_HOSTS = os.environ.get(
