@@ -16,5 +16,5 @@ ignore = [
 "main/management/commands/*" = ["S311"]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "dspace.settings"
+DJANGO_SETTINGS_MODULE = "dspace.settings_test"
 python_files = ["test_*.py"]
