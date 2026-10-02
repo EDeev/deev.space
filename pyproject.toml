@@ -1,0 +1,20 @@
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+extend-exclude = ["main/migrations"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "S", "UP", "I"]
+ignore = [
+    "E501",   # длинные строки — в шаблонах сообщений и help_text
+    "S308",   # mark_safe — проверяется вручную
+    "UP031",  # %-форматирование в логах — осознанно
+]
+
+[tool.ruff.lint.per-file-ignores]
+"main/tests/*" = ["S101", "S106"]
+"main/management/commands/*" = ["S311"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "dspace.settings"
+python_files = ["test_*.py"]
