@@ -1,393 +1,128 @@
 # deev.space
 
-<div align="center">
-  <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python Version">
-  <img src="https://img.shields.io/badge/Django-4.2+-green.svg" alt="Django Version">
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
-  <img src="https://img.shields.io/badge/Status-Production-brightgreen.svg" alt="Status">
-</div>
+**Русский** · [English](README.en.md)
 
-Профессиональный персональный веб-сайт портфолио backend-разработчика, созданный на Django. Проект представляет собой полнофункциональную платформу с системой управления контентом, блог-системой с комментариями, интерактивным портфолио проектов и современным адаптивным дизайном.
+[![CI](https://github.com/EDeev/deev.space/actions/workflows/ci.yml/badge.svg)](https://github.com/EDeev/deev.space/actions/workflows/ci.yml)
+[![Docker](https://github.com/EDeev/deev.space/actions/workflows/docker.yml/badge.svg)](https://github.com/EDeev/deev.space/actions/workflows/docker.yml)
+[![Release](https://img.shields.io/github/v/release/EDeev/deev.space)](https://github.com/EDeev/deev.space/releases)
+[![License](https://img.shields.io/github/license/EDeev/deev.space)](LICENSE)
 
-## 🌟 Основные возможности
+Персональный сайт-портфолио Python-разработчика: проекты, блог, опыт и стек, оценки статей без
+регистрации. Исходный код сайта [deev.space](https://deev.space).
 
-- **Система управления контентом** через расширенную Django Admin панель с кастомными инлайнами и фильтрами
-- **Блог-платформа** с поддержкой категорий, комментариев, лайков/дизлайков, галерей изображений и прикрепленных файлов
-- **Портфолио проектов** с гибкой системой фильтрации по языкам программирования, технологиям и статусам
-- **Страница достижений** для демонстрации наград и сертификатов
-- **Многоуровневая система комментариев** с возможностью оценки и вложенности до 3 уровней
-- **Интеграция с социальными сетями** для автоматической публикации новых статей в Telegram и VKontakte
-- **Адаптивный дизайн** с поддержкой всех современных устройств и разрешений
-- **SEO-оптимизация** включая динамический sitemap, schema.org разметку и Open Graph метатеги
-- **Продвинутая аналитика** с интеграцией Яндекс.Метрики и Google Analytics
-- **Безопасность** с использованием Yandex SmartCaptcha и защитой от CSRF/XSS атак
+**Статус:** личный проект, активно развивается · работает на [deev.space](https://deev.space)
 
-## 🛠 Технологический стек
+![Главная страница deev.space](docs/screenshots/main.png)
 
-**Backend:**
-- Python 3.8+
-- Django 4.2+
-- SQLite (разработка) / PostgreSQL (продакшн)
-- Pillow для обработки изображений
-- Bleach для санитизации HTML
-- BeautifulSoup4 для парсинга метаданных ссылок
-- Requests для HTTP запросов
+**Стек:** Python 3.12 · Django 4.2 · SQLite · bleach · Yandex SmartCaptcha · gunicorn + nginx · Docker
 
-**Frontend:**
-- HTML5, CSS3 с использованием CSS Custom Properties
-- Vanilla JavaScript (ES6+)
-- Font Awesome 6.5 для иконок
-- Devicon для технологических иконок
-- AOS (Animate On Scroll) для анимаций
-- Prism.js для подсветки синтаксиса кода
-- Google Fonts (Raleway, Inter)
+## Возможности
 
-**Интеграции:**
-- Yandex SmartCaptcha для защиты форм
-- Telegram Bot API для автопостинга
-- VK API для публикации в группы
-- Schema.org для структурированных данных
+- Главная с карточкой-паспортом, стеком по категориям и блоком «В цифрах»
+- Блог: категории, галереи, вложения, ссылки с автоматическим превью, комментарии с ответами
+- Лайки и дизлайки без регистрации — по подписанной cookie, с лимитом оценок с одного IP
+- Уникальные просмотры статей с фильтром ботов
+- Проекты, достижения, опыт и образование — весь контент редактируется в админке
+- Форма обратной связи с капчей и уведомлением владельцу в Telegram
+- `sitemap.xml`, человекопонятные адреса, свои страницы 404 и 500
 
-**Инфраструктура:**
-- Nginx как веб-сервер и reverse proxy
-- Gunicorn для WSGI сервера
-- Supervisor для управления процессами
-- Let's Encrypt для SSL сертификатов
+## Быстрый старт
 
-## 📁 Структура проекта
-```
-deev.space/
-├── main/                       # Основное Django приложение
-│   ├── migrations/             # Миграции базы данных
-│   ├── templatetags/           # Кастомные теги и фильтры
-│   │   └── custom_filters.py  # Фильтры для технологий, времени чтения
-│   ├── models.py               # Модели данных
-│   ├── views.py                # Представления и бизнес-логика
-│   ├── forms.py                # Формы с валидацией
-│   ├── admin.py                # Административная панель
-│   ├── signals.py              # Сигналы для автопостинга
-│   ├── sitemaps.py             # Генерация sitemap
-│   ├── context_processors.py  # Глобальные контекстные данные
-│   └── urls.py                 # URL маршруты
-├── dspace/                     # Конфигурация Django проекта
-│   ├── settings.py             # Настройки приложения
-│   ├── urls.py                 # Корневые URL паттерны
-│   ├── wsgi.py                 # WSGI точка входа
-│   └── asgi.py                 # ASGI точка входа
-├── templates/                  # HTML шаблоны
-│   ├── wrapper.html            # Базовый шаблон с SEO
-│   ├── index.html              # Главная страница
-│   ├── about.html              # Страница "Обо мне"
-│   ├── projects.html           # Портфолио проектов
-│   ├── achievements.html       # Достижения
-│   ├── contacts.html           # Контакты и форма обратной связи
-│   ├── blog/                   # Шаблоны блога
-│   │   ├── blog.html           # Список статей
-│   │   └── article.html        # Детальная страница статьи
-│   ├── auth/                   # Шаблоны аутентификации
-│   │   ├── login.html          # Вход
-│   │   └── register.html       # Регистрация
-│   ├── errors/                 # Страницы ошибок
-│   │   ├── 404.html            # Страница не найдена
-│   │   └── 500.html            # Ошибка сервера
-│   ├── includes/               # Переиспользуемые компоненты
-│   │   ├── project_card.html   # Карточка проекта
-│   │   ├── comments.html       # Рекурсивные комментарии
-│   │   └── pagination.html     # Пагинация
-│   └── widgets/                # Кастомные виджеты
-│       └── smartcaptcha.html   # Yandex SmartCaptcha
-├── static/                     # Статические файлы
-│   ├── css/                    # Стили
-│   │   ├── variables.css       # CSS переменные и дизайн-токены
-│   │   ├── base.css            # Базовые стили и типографика
-│   │   ├── components.css      # Переиспользуемые компоненты
-│   │   ├── layout.css          # Раскладка и сетки
-│   │   ├── projects.css        # Стили проектов
-│   │   ├── blog.css            # Стили блога
-│   │   ├── pages.css           # Страничные стили
-│   │   └── media.css           # Медиа-запросы
-│   ├── js/                     # JavaScript
-│   │   └── main.js             # Основная логика фронтенда
-│   └── img/                    # Изображения
-│       ├── logo.png            # Логотип
-│       └── favicon.ico         # Фавикон
-├── media/                      # Загружаемые файлы
-│   ├── articles/               # Изображения статей
-│   │   ├── gallery/            # Галереи статей
-│   │   └── files/              # Прикрепленные файлы
-│   ├── projects/               # Изображения проектов
-│   ├── avatars/                # Аватары пользователей
-│   └── site/                   # Настройки сайта
-├── logs/                       # Логи приложения
-├── requirements.txt            # Python зависимости
-├── manage.py                   # Django CLI утилита
-└── README.md                   # Документация
-```
-
-## 🚀 Быстрый старт
-
-### Предварительные требования
-
-Перед началом работы убедитесь, что установлены следующие компоненты:
-
-- Python 3.8 или выше
-- pip (менеджер пакетов Python)
-- virtualenv или venv (рекомендуется)
-- Git для клонирования репозитория
-
-### Установка и запуск
-
-**Шаг 1. Клонирование репозитория**
 ```bash
-git clone https://github.com/EDeev/deev.space.git
-cd deev.space
+git clone https://github.com/EDeev/deev.space.git && cd deev.space
+cp .env.example .env      # задайте DJANGO_SECRET_KEY
+docker compose up -d
+docker compose exec web python manage.py createsuperuser
 ```
 
-**Шаг 2. Создание виртуального окружения**
+Сайт откроется на `http://localhost:8000`, админка — на `/admin/`. Готовый образ:
+`docker pull ghcr.io/edeev/deev.space` или `docker pull dcr.deev.su/edeev/deev.space`.
+
+## Установка без Docker
+
 ```bash
-python -m venv venv
-
-# Для Linux/macOS:
-source venv/bin/activate
-
-# Для Windows:
-venv\Scripts\activate
-```
-
-**Шаг 3. Установка зависимостей**
-```bash
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-**Шаг 4. Настройка переменных окружения**
-
-Создайте файл `.env` в корне проекта со следующим содержимым:
-```env
-# Django
-DJANGO_SECRET_KEY=your-secret-key-here
-DJANGO_DEBUG=True
-
-# Email
-EMAIL_HOST=smtp.yandex.ru
-EMAIL_PORT=465
-EMAIL_HOST_USER=your-email@example.com
-EMAIL_HOST_PASSWORD=your-password
-DEFAULT_FROM_EMAIL=your-email@example.com
-CONTACT_EMAIL=your-email@example.com
-
-# Yandex SmartCaptcha
-SMARTCAPTCHA_CLIENT_KEY=your-client-key
-SMARTCAPTCHA_SERVER_KEY=your-server-key
-
-# Telegram (опционально)
-TELEGRAM_BOT_TOKEN=your-bot-token
-TELEGRAM_CHANNEL_ID=your-channel-id
-
-# VK (опционально)
-VK_ACCESS_TOKEN=your-access-token
-VK_GROUP_ID=your-group-id
-```
-
-**Шаг 5. Применение миграций базы данных**
-```bash
+cp .env.example .env      # для разработки: DJANGO_DEBUG=True
 python manage.py migrate
-```
-
-**Шаг 6. Создание суперпользователя**
-```bash
+python manage.py populate_demo     # демо-контент, по желанию
 python manage.py createsuperuser
-```
-
-Следуйте инструкциям для создания учетной записи администратора.
-
-**Шаг 7. Сбор статических файлов**
-```bash
-python manage.py collectstatic --noinput
-```
-
-**Шаг 8. Запуск сервера разработки**
-```bash
 python manage.py runserver
 ```
 
-Сайт будет доступен по адресу: `http://127.0.0.1:8000`
+## Конфигурация
 
-Административная панель: `http://127.0.0.1:8000/admin`
+Все настройки — переменные окружения (полный список — [`.env.example`](.env.example)):
 
-## 📊 Модели данных
+| Переменная | Назначение |
+|---|---|
+| `DJANGO_SECRET_KEY` | секретный ключ Django, обязателен при `DJANGO_DEBUG=False` |
+| `DJANGO_DEBUG` | режим отладки, по умолчанию `False` |
+| `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS` | домены сайта через запятую |
+| `DJANGO_DB_PATH`, `DJANGO_MEDIA_ROOT` | где лежат база SQLite и загруженные файлы |
+| `SMARTCAPTCHA_CLIENT_KEY`, `SMARTCAPTCHA_SERVER_KEY` | Yandex SmartCaptcha для формы обратной связи |
+| `EMAIL_*`, `CONTACT_EMAIL` | отправка писем с формы обратной связи |
+| `ALERTBOT_TOKEN`, `ALERTBOT_CHAT_ID` | уведомление владельцу в Telegram о новом сообщении |
+| `SOCIAL_AUTOPOST`, `TELEGRAM_*`, `VK_*` | автопостинг новых статей, по умолчанию выключен |
 
-### SiteSettings (Настройки сайта)
-Singleton модель для управления глобальными настройками сайта через административную панель. Включает информацию о владельце, контакты, социальные сети и файлы.
+> [!IMPORTANT]
+> С `DJANGO_DEBUG=False` сайт включает HSTS и редирект на HTTPS. Для запуска без TLS (локально или за
+> прокси, который сам терминирует HTTPS) задайте `DJANGO_SECURE_SSL_REDIRECT=False`.
 
-**Основные поля:**
-- `site_name`, `site_description` - название и описание сайта
-- `owner_name`, `owner_title`, `owner_bio` - информация о владельце
-- `owner_photo` - фотография
-- `owner_email`, `owner_phone`, `owner_city` - контактные данные
-- `telegram_url`, `github_url`, `vk_url`, `linkedin_url` - социальные сети
-- `resume_file` - файл резюме
+## Как выглядит
 
-### Article (Статьи блога и достижения)
-Универсальная модель для статей блога и достижений с поддержкой мультимедиа контента.
+| О себе | Проекты |
+|---|---|
+| ![О себе](docs/screenshots/about.png) | ![Проекты](docs/screenshots/projects.png) |
+| **Блог** | **Мобильная версия** |
+| ![Блог](docs/screenshots/blog.png) | ![Мобильная версия](docs/screenshots/mobile.png) |
 
-**Основные поля:**
-- `title`, `slug`, `sub_title` - заголовки и URL
-- `excerpt`, `post` - описание и содержание
-- `img` - превью изображение
-- `category` - категория статьи
-- `is_published` - статус публикации
-- `comments_enabled` - включение комментариев
-- `is_achievement` - флаг достижения
-- `views`, `date`, `updated_at` - метаданные
+## Как устроено
 
-**Связанные модели:**
-- `ArticleImage` - галерея изображений
-- `ArticleFile` - прикрепленные файлы
-- `ArticleLink` - прикрепленные ссылки с автоматическим парсингом метаданных
-
-### Project (Портфолио проектов)
-Модель для управления проектами с гибкой системой статусов и отображения.
-
-**Основные поля:**
-- `title`, `slug` - название и URL
-- `short_description`, `description` - описания
-- `features` - список особенностей
-- `programming_languages` - языки программирования
-- `technologies` - используемые технологии
-- `status` - связь с ProjectStatus
-- `card_size` - размер карточки (featured/regular/small)
-- `show_on_homepage`, `homepage_order` - отображение на главной
-- `github_url`, `demo_url` - ссылки
-
-### Experience (Опыт работы)
-Детальная информация о профессиональном опыте.
-
-**Основные поля:**
-- `title`, `company`, `company_url` - должность и компания
-- `description`, `responsibilities` - описание и обязанности
-- `technologies` - используемые технологии
-- `start_date`, `end_date`, `is_current` - период работы
-- Автоматический расчет продолжительности через свойство `duration`
-
-### Education (Образование)
-Информация об образовании с поддержкой различных типов.
-
-**Основные поля:**
-- `institution`, `degree` - учебное заведение и специальность
-- `education_type` - тип (университет/курс/школа)
-- `achievements` - список достижений
-- `start_year`, `end_year`, `is_current` - период обучения
-- `certificate_number`, `certificate_url` - сертификаты
-
-### Comment (Комментарии)
-Многоуровневая система комментариев с поддержкой вложенности.
-
-**Основные поля:**
-- `article`, `user`, `parent` - связи
-- `content` - содержание комментария
-- `is_approved` - модерация
-- Автоматический расчет уровня вложенности через `nesting_level`
-- Подсчет лайков/дизлайков через `CommentLike`
-
-### CustomUser (Пользователи)
-Расширенная модель пользователя Django.
-
-**Дополнительные поля:**
-- `email` - опциональный email
-- `is_verified` - статус верификации
-- `avatar` - аватар пользователя
-
-## ⚙️ Конфигурация
-
-### Основные настройки производства
-
-Для развертывания в продакшн среде необходимо изменить следующие параметры в `dspace/settings.py`:
-```python
-# Безопасность
-DEBUG = False
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
-ALLOWED_HOSTS = ['deev.space', 'www.deev.space']
-
-# База данных (рекомендуется PostgreSQL)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'deevspace_db',
-        'USER': 'deevspace_user',
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
-# Безопасность
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+```mermaid
+flowchart LR
+    B[Браузер] --> N[nginx<br/>TLS, static, media]
+    N --> G[gunicorn]
+    G --> D[Django: main]
+    D --> S[(SQLite)]
+    D -.-> T[Telegram / AlertBot]
+    D -.-> C[Yandex SmartCaptcha]
 ```
 
-### Настройка интеграций
+Одно приложение `main`: модели контента, оценок и настроек сайта, классовые представления, JSON-API
+для оценок и комментариев, middleware анонимного посетителя. Подробности:
 
-**Автопостинг в Telegram:**
-Настройте переменные окружения `TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHANNEL_ID`. При публикации новой статьи автоматически отправляется пост в канал.
+- [docs/architecture.md](docs/architecture.md) — модели, оценки без регистрации, антинакрутка, безопасность
+- [docs/deploy.md](docs/deploy.md) — запуск в Docker и как устроен боевой сервер
 
-**Автопостинг в VKontakte:**
-Настройте `VK_ACCESS_TOKEN` и `VK_GROUP_ID` для автоматической публикации в группу VK.
+## Развёртывание
 
-**Email уведомления:**
-Настройте SMTP параметры для отправки уведомлений через контактную форму.
+[deev.space](https://deev.space) работает на VPS: gunicorn под отдельным пользователем за nginx с
+сертификатом Let's Encrypt, статика и загрузки отдаются nginx. Доступность и срок сертификата
+отслеживает Prometheus. Docker-образ собирает GitHub Actions на каждый тег `v*` и публикует в GitHub
+Packages и в реестр `dcr.deev.su`.
 
-## 🌐 Развертывание
+## Разработка
 
-Можете прочитать о развёртывании проекта на сервере в <a href="https://deev.space/blog/razvertyvanie-django-proekta-na-servere-s-nulya-do-https/">статье на моём сайте</a>.
+```bash
+pip install -r requirements-dev.txt
+ruff check . && pytest
+```
 
-## 📈 Аналитика и мониторинг
+Тесты (pytest-django) запускаются в боевом режиме: голосование и антинакрутка, формы, экранирование,
+страницы и статика. CI выполняет то же самое на каждый push и pull request.
 
-Проект интегрирован с системами аналитики для отслеживания поведения пользователей:
+## Лицензия
 
-**Яндекс.Метрика:**
-Автоматически загружается при наличии `YANDEX_METRIKA_ID` в настройках. Отслеживает посещаемость, карты кликов, вебвизор и другие метрики.
+MIT — см. [LICENSE](LICENSE).
 
-**Google Analytics:**
-Подключается при указании `GOOGLE_ANALYTICS_ID`. Предоставляет детальную аналитику трафика и поведения пользователей.
+## Автор
 
-**Логирование:**
-Настроено детальное логирование с записью ошибок в файлы и вывод информационных сообщений в консоль.
-
-## 🛡️ Безопасность
-
-Проект реализует следующие меры безопасности:
-
-- **CSRF Protection** - защита от межсайтовых запросов через Django middleware
-- **XSS Protection** - санитизация пользовательского ввода с помощью Bleach
-- **SQL Injection Protection** - использование Django ORM
-- **Yandex SmartCaptcha** - защита форм от ботов
-- **HTTPS Redirect** - принудительное перенаправление на защищенное соединение
-- **HSTS Headers** - заголовки безопасности для браузеров
-- **Secure Cookies** - защищенные cookies для сессий
-- **Content Security Policy** - настроенные заголовки безопасности
-- **Rate Limiting** - защита от перегрузки (рекомендуется настроить на уровне Nginx)
-
-## 👨‍💻 Автор и контакты
-
-**Деев Егор Викторович**  
-Backend Developer | Python Specialist
-
-- **Веб-сайт:** [deev.space](https://deev.space)
-- **GitHub:** [@EDeev](https://github.com/EDeev)
-- **Email:** egor@deev.space
-- **Telegram:** [@Egor_Deev](https://t.me/Egor_Deev)
-
-## 📄 Лицензия
-
-Этот проект является некоммерческим и распространяется под лицензией MIT.
+**Деев Егор Викторович** — [GitHub](https://github.com/EDeev) · [Telegram](https://t.me/DeevEgor) · [egor@deev.space](mailto:egor@deev.space)
 
 ---
 
 <div align="center">
-  <sub>⭐ Если проект оказался полезным, поставьте звездочку на GitHub!</sub>
-  <p><sub>Создано с ❤️ от вашего дорогого - <a href="https://deev.space">deev.space</a> ©</sub></p>
+  <sub>⭐ Если проект оказался полезным, поставьте звёздочку на GitHub!</sub>
+  <p><sub>Сделано с ❤️ — <a href="https://deev.space">deev.space</a></sub></p>
 </div>
