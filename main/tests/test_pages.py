@@ -44,3 +44,20 @@ def test_visitor_cookie_is_signed_and_httponly(client):
 @pytest.mark.django_db
 def test_unknown_page_returns_404(client):
     assert client.get('/no-such-page/', HTTP_USER_AGENT=UA).status_code == 404
+
+
+def test_all_static_references_exist():
+    """Каждый {% static %} в шаблонах указывает на существующий файл (иначе 500 в бою)."""
+    import re
+    from pathlib import Path
+
+    from django.conf import settings
+
+    pattern = re.compile(r"{% static '([^']+)' %}")
+    missing = [
+        f'{tpl.name}: {ref}'
+        for tpl in Path(settings.BASE_DIR, 'templates').rglob('*.html')
+        for ref in pattern.findall(tpl.read_text(encoding='utf-8'))
+        if not Path(settings.BASE_DIR, 'static', ref).exists()
+    ]
+    assert not missing
