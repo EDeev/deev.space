@@ -36,7 +36,7 @@ docker compose exec web python manage.py createsuperuser
 ```
 
 Сайт откроется на `http://localhost:8000`, админка — на `/admin/`. Готовый образ:
-`docker pull ghcr.io/edeev/deev.space` или `docker pull dcr.deev.su/edeev/deev.space`.
+`docker pull ghcr.io/edeev/deev.space` или `docker pull git.deev.su/edeev/deev.space`.
 
 ## Установка без Docker
 
@@ -100,7 +100,7 @@ flowchart LR
 [deev.space](https://deev.space) работает на VPS: gunicorn под отдельным пользователем за nginx с
 сертификатом Let's Encrypt, статика и загрузки отдаются nginx. Доступность и срок сертификата
 отслеживает Prometheus. Docker-образ собирает GitHub Actions на каждый тег `v*` и публикует в GitHub
-Packages и в реестр `dcr.deev.su`.
+Packages и в реестр `git.deev.su`.
 
 ## Разработка
 

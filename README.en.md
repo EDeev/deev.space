@@ -36,7 +36,7 @@ docker compose exec web python manage.py createsuperuser
 ```
 
 The site runs at `http://localhost:8000`, the admin at `/admin/`. Prebuilt image:
-`docker pull ghcr.io/edeev/deev.space` or `docker pull dcr.deev.su/edeev/deev.space`.
+`docker pull ghcr.io/edeev/deev.space` or `docker pull git.deev.su/edeev/deev.space`.
 
 ## Installing without Docker
 
@@ -100,7 +100,7 @@ ratings and comments, and an anonymous visitor middleware. Details (in Russian):
 [deev.space](https://deev.space) runs on a VPS: gunicorn under a dedicated user behind nginx with a
 Let's Encrypt certificate; nginx serves static files and uploads. Prometheus monitors availability and
 certificate expiry. GitHub Actions builds the Docker image on every `v*` tag and publishes it to GitHub
-Packages and to the `dcr.deev.su` registry.
+Packages and to the `git.deev.su` registry.
 
 ## Development
 

@@ -13,7 +13,7 @@ docker compose exec web python manage.py createsuperuser
 
 ```bash
 docker pull ghcr.io/edeev/deev.space:latest
-docker pull dcr.deev.su/edeev/deev.space:latest
+docker pull git.deev.su/edeev/deev.space:latest
 ```
 
 За обратным прокси укажите домены в `DJANGO_ALLOWED_HOSTS` и `DJANGO_CSRF_TRUSTED_ORIGINS`, а
