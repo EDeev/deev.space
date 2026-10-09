@@ -396,3 +396,173 @@
 .github-cta-text p {
     margin: 0;
 }
+/* ── Обложка карточки без картинки (includes/project_cover.html) ─────────────────────────────
+   Пропорции — как у картинок-обложек 1920×1080: всё в единицах контейнера (cqw/cqh/cqmin). */
+.project-cover {
+    position: absolute;
+    inset: 0;
+    container-type: size;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 60% 70% at 78% 45%, rgba(230, 57, 70, .28) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 10% 100%, rgba(230, 57, 70, .10) 0%, transparent 70%),
+        var(--bg-dark);
+    color: var(--text-primary);
+    font-family: Inter, sans-serif;
+}
+.project-cover__grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px);
+    background-size: 3.4cqw 3.4cqw;
+    -webkit-mask-image: radial-gradient(ellipse at 70% 45%, #000 0%, transparent 75%);
+    mask-image: radial-gradient(ellipse at 70% 45%, #000 0%, transparent 75%);
+}
+/* обычная карточка: сетка «текст + теги слева, значок справа», размеры шрифтов — от высоты (cqh), отступы — от ширины */
+.project-cover__body {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: 1fr auto;
+    column-gap: 12cqw;
+    padding: 26cqh 10.4cqw 13cqh max(17.2cqw, 64px);
+}
+.project-cover__text { grid-column: 1; grid-row: 1; align-self: center; min-width: 0; }
+.project-cover__tile {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    width: 37cqh;
+    height: 37cqh;
+    border-radius: 9cqh;
+    background: var(--gradient-primary);
+    box-shadow: 0 0 11cqh rgba(230, 57, 70, .45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.project-cover__tile i { font-size: 17.6cqh; color: #fff; }
+.project-cover__tile--logo { background-size: cover; background-position: center; box-shadow: 0 0 11cqh rgba(230, 57, 70, .45), 0 0 0 .6cqh rgba(255, 255, 255, .06); }
+.project-cover__title {
+    font-family: Raleway, sans-serif;
+    font-weight: 800;
+    font-size: 10cqh;
+    line-height: 1.05;
+    letter-spacing: -.1cqh;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.project-cover__sub {
+    margin-top: 3cqh;
+    font-size: 3.5cqh;
+    line-height: 1.4;
+    color: #a3a3a3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.project-cover__tags { grid-column: 1; grid-row: 2; display: flex; gap: 1.7cqh; flex-wrap: nowrap; overflow: hidden; }
+.project-cover__tags span {
+    padding: 1.3cqh 3cqh;
+    border: 1px solid #3a3a3a;
+    border-radius: 9999px;
+    background: #141414;
+    font-size: 2.8cqh;
+    font-weight: 500;
+    color: #d4d4d4;
+    white-space: nowrap;
+}
+.project-cover__mark {
+    position: absolute;
+    right: 10.4cqw;
+    bottom: 13.9cqh;
+    font-family: Raleway, sans-serif;
+    font-weight: 700;
+    font-size: 3cqh;
+    color: #525252;
+}
+.project-cover__mark b { color: var(--primary-color); }
+
+/* главная карточка: колонка по центру, размеры от меньшей стороны */
+.project-cover--center {
+    background: radial-gradient(ellipse 40% 55% at 50% 40%, rgba(230, 57, 70, .30) 0%, transparent 70%), var(--bg-dark);
+}
+.project-cover--center .project-cover__grid {
+    -webkit-mask-image: radial-gradient(ellipse 45% 70% at 50% 45%, #000 0%, transparent 80%);
+    mask-image: radial-gradient(ellipse 45% 70% at 50% 45%, #000 0%, transparent 80%);
+}
+.project-cover--center .project-cover__body {
+    position: absolute;
+    inset: 0;
+    padding: 0 8cqmin;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8cqmin;
+    text-align: center;
+}
+.project-cover--center .project-cover__tile {
+    position: static;
+    align-self: center;
+    width: 30cqmin;
+    height: 30cqmin;
+    border-radius: 7.7cqmin;
+    box-shadow: 0 0 11cqmin rgba(230, 57, 70, .45);
+}
+.project-cover--center .project-cover__tile i { font-size: 14.8cqmin; }
+.project-cover--center .project-cover__text { position: static; width: auto; margin-top: 5.5cqmin; }
+.project-cover--center .project-cover__title { font-size: 9.3cqmin; white-space: normal; }
+.project-cover--center .project-cover__sub { margin-top: 2.4cqmin; font-size: 3.5cqmin; }
+.project-cover--center .project-cover__tags {
+    position: static;
+    margin-top: 4cqmin;
+    gap: 1.5cqmin;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.project-cover--center .project-cover__tags span { padding: 1.3cqmin 2.8cqmin; font-size: 2.8cqmin; }
+.project-cover--center .project-cover__mark { display: none; }
+
+/* ── Картинка карточки на весь экран (main.js, initImageLightbox) ───────────────────────────── */
+.project-image img.js-zoomable { cursor: zoom-in; }
+.image-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 3vw;
+    background: rgba(8, 8, 8, .92);
+    cursor: zoom-out;
+    opacity: 0;
+    transition: opacity .2s ease;
+}
+.image-lightbox.is-open { opacity: 1; }
+.image-lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, .6);
+}
+.image-lightbox__close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border-light);
+    border-radius: 50%;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    cursor: pointer;
+}
+.image-lightbox__close:hover { border-color: var(--primary-color); color: var(--primary-color); }
+@media (prefers-reduced-motion: reduce) { .image-lightbox { transition: none; } }

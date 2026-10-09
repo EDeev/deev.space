@@ -152,7 +152,8 @@ class ProjectAdmin(admin.ModelAdmin):
             'fields': ('title', 'slug', 'short_description', 'description', 'features')
         }),
         ('Визуальное', {
-            'fields': ('img_main', 'icon', 'card_size')
+            'fields': ('img_main', 'cover_logo', 'icon', 'card_size'),
+            'description': 'Без главного изображения карточка показывает автоматическую обложку: название, описание, технологии и значок (или логотип).'
         }),
         ('Техническое', {
             'fields': ('programming_languages', 'technologies', 'github_url', 'demo_url'),

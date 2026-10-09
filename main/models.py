@@ -332,6 +332,10 @@ class Project(models.Model):
     description = models.TextField(verbose_name='Полное описание')
     features = models.TextField(blank=True, verbose_name='Особенности (каждая с новой строки)')
     img_main = models.ImageField(upload_to='projects/', blank=True, null=True, verbose_name='Главное изображение')
+    cover_logo = models.ImageField(
+        upload_to='projects/logos/', blank=True, null=True, verbose_name='Логотип для обложки',
+        help_text='Если главного изображения нет, карточка рисует обложку сама; с логотипом он стоит на плитке вместо значка'
+    )
     icon = models.CharField(max_length=50, default='fas fa-code', verbose_name='Иконка проекта')
 
     # Разделение на языки и технологии

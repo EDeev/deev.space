@@ -15,7 +15,60 @@
         initContactForm();
         initCodeBlocks();
         addHeaderAnchors();
+        initImageLightbox();
     });
+
+    // ===== Картинка карточки проекта на весь экран =====
+    function initImageLightbox() {
+        let box = null;
+        let lastFocus = null;
+
+        function close() {
+            if (!box) return;
+            const el = box;
+            box = null;
+            el.classList.remove('is-open');
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = '';
+            setTimeout(() => el.remove(), 200);
+            if (lastFocus) lastFocus.focus();
+        }
+
+        function onKey(e) {
+            if (e.key === 'Escape') close();
+        }
+
+        function open(img) {
+            lastFocus = document.activeElement;
+            box = document.createElement('div');
+            box.className = 'image-lightbox';
+            box.setAttribute('role', 'dialog');
+            box.setAttribute('aria-modal', 'true');
+            box.setAttribute('aria-label', img.alt || 'Изображение');
+            const full = document.createElement('img');
+            full.src = img.currentSrc || img.src;
+            full.alt = img.alt || '';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'image-lightbox__close';
+            btn.setAttribute('aria-label', 'Закрыть');
+            btn.innerHTML = '<i class="fas fa-times"></i>';
+            box.append(full, btn);
+            box.addEventListener('click', close);
+            document.body.appendChild(box);
+            document.body.style.overflow = 'hidden';
+            document.addEventListener('keydown', onKey);
+            requestAnimationFrame(() => box && box.classList.add('is-open'));
+            btn.focus();
+        }
+
+        document.addEventListener('click', function(e) {
+            const img = e.target.closest('img.js-zoomable');
+            if (!img) return;
+            e.preventDefault();
+            open(img);
+        });
+    }
 
     // ===== AOS Animation =====
     function initAOS() {

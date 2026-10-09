@@ -10,11 +10,9 @@
         <!-- Featured Layout (Large) -->
         <div class="project-image">
             {% if project.img_main %}
-            <img src="{{ project.img_main.url }}" alt="{{ project.title }}" loading="lazy">
+            <img src="{{ project.img_main.url }}" alt="{{ project.title }}" loading="lazy" class="js-zoomable">
             {% else %}
-            <div class="project-image-placeholder">
-                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
-            </div>
+            {% include 'includes/project_cover.html' %}
             {% endif %}
 
             <div class="project-logo">
@@ -115,11 +113,9 @@
         <!-- Regular Layout -->
         <div class="project-image">
             {% if project.img_main %}
-            <img src="{{ project.img_main.url }}" alt="{{ project.title }}" loading="lazy">
+            <img src="{{ project.img_main.url }}" alt="{{ project.title }}" loading="lazy" class="js-zoomable">
             {% else %}
-            <div class="project-image-placeholder">
-                <i class="{{ project.icon|default:'fas fa-code' }}"></i>
-            </div>
+            {% include 'includes/project_cover.html' %}
             {% endif %}
 
             <div class="project-logo">

@@ -1,0 +1,24 @@
+{% comment %}
+Обложка карточки, если у проекта нет картинки: название, краткое описание, технологии и значок проекта.
+Обычная карточка — текст слева, значок (или логотип из cover_logo) справа; главная (featured) — всё по центру, чтобы пережить обрезку по бокам.
+Размеры — в единицах контейнера (container queries, projects.css), поэтому пропорции не зависят от ширины карточки.
+{% endcomment %}
+<div class="project-cover{% if project.card_size == 'featured' %} project-cover--center{% endif %}" aria-hidden="true">
+    <div class="project-cover__grid"></div>
+    <div class="project-cover__body">
+        {% if project.cover_logo %}
+        <div class="project-cover__tile project-cover__tile--logo" style="background-image: url('{{ project.cover_logo.url }}')"></div>
+        {% else %}
+        <div class="project-cover__tile"><i class="{{ project.icon|default:'fas fa-code' }}"></i></div>
+        {% endif %}
+        <div class="project-cover__text">
+            <div class="project-cover__title">{{ project.title }}</div>
+            <div class="project-cover__sub">{{ project.short_description|truncatechars:110 }}</div>
+        </div>
+        <div class="project-cover__tags">
+            {% for lang in project.get_languages_list|slice:":1" %}<span>{{ lang }}</span>{% endfor %}
+            {% for tech in project.get_technologies_list|slice:":3" %}<span>{{ tech }}</span>{% endfor %}
+        </div>
+    </div>
+    <div class="project-cover__mark"><b>deev</b>.space</div>
+</div>
